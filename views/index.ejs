@@ -1,0 +1,27 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <input type='email' id='email'>
+        <input type='password' id='password'>
+        <button onclick='submitForm()'>Submit</button>
+    </body>
+    <script>
+        function submitForm() {
+            var email = document.getElementById('email').value
+            var password = document.getElementById('password').value
+            var body = {
+                email,
+                password
+            }
+            var xhttp = new XMLHttpRequest();
+            // xhttp.onreadystatechange = function() {
+            //     if (this.readyState == 4 && this.status == 200) {
+            //     document.getElementById("demo").innerHTML = this.responseText
+            //     }
+            // };
+            xhttp.open("POST", "http://localhost:5000/login", true)
+            xhttp.send(JSON.stringify(body))
+        }
+    </script>
+</html>
