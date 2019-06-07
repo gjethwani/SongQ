@@ -11,30 +11,30 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }))
 
-app.use(express.static('productImages'))
-
 const whitelist = [
-  'http://localhost:5000/'
+  'http://localhost:5000'
 ]
   
 const routes = [
-  '/',
-  'login'
+  '/sign-up',
+  '/login',
+  '/spotify-login',
+  '/spotify-redirect',
+  '/authenticate-spotify'
 ]
 
 const corsOptions = {
   origin: function (origin, callback) {
-    callback(null, true)
-    // if (whitelist.indexOf(origin) !== -1) {
-    //   callback(null, true)
-    // } else {
-    //   callback(new Error('Not allowed by CORS'))
-    // }
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
   },
   credentials: true
 }
   
-app.options(routes, cors(corsOptions))
+// app.options(routes, cors(corsOptions))
   
 app.use(express.static("public"))
 app.use(session({ 
@@ -44,6 +44,7 @@ app.use(session({
 }))
 app.use(passport.initialize())
 app.use(passport.session())
+app.use(cors())
 
 module.exports = {
     app,

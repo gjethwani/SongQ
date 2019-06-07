@@ -5,6 +5,10 @@ const bcrypt = require('bcrypt')
 const { knex } = require('./knex')
 
 passport.use(new LocalStrategy(
+    {
+      usernameField: 'email',
+      passwordField: 'password'
+    },
     function(email, password, done) {
       knex('Users')
         .where({ email })
