@@ -9,14 +9,6 @@ const request = require('request')
 
 app.set('view-engine', 'ejs')
 
-app.get('/', function(req, res) {
-  res.render('index.ejs')
-})
-
-app.get('/home', function(req, res) {
-  res.render('home.ejs')
-})
-
 function validateEmail(email) {
   var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return re.test(String(email).toLowerCase())
@@ -150,6 +142,18 @@ app.get('/spotify-login', function(req, res) {
       '&client_id=' + process.env.SPOTIFY_CLIENT_ID +
       (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
       '&redirect_uri=' + encodeURIComponent(process.env.SPOTIFY_REDIRECT_URI))
+    // axios.get('https://accounts.spotify.com/authorize' +
+    //   '?response_type=code' +
+    //   '&client_id=' + process.env.SPOTIFY_CLIENT_ID +
+    //   (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
+    //   '&redirect_uri=' + encodeURIComponent(process.env.SPOTIFY_REDIRECT_URI))
+    //   .then(function(response) {
+    //     res.set('Content-Type', 'text/html');
+    //     res.send(new Buffer(response.data))
+    //   })
+    //   .catch(function(error) {
+    //     console.log(error)
+    //   })
   }
 })
 
@@ -171,7 +175,6 @@ app.get('/spotify-redirect', function(req, res) {
   if (!req.user) {
     res.status(401).send()
   } else {
-    console.log(req.query)
     var code = req.query.code
     var authOptions = {
       url: 'https://accounts.spotify.com/api/token',
@@ -199,7 +202,7 @@ app.get('/spotify-redirect', function(req, res) {
           expiresAt
         })
           .then(function() {
-            res.redirect('/home')
+            res.status(200).send()
           })
           .catch(function(err) {
             res.status(500).json({ err })
@@ -264,7 +267,7 @@ app.get('/authenticate-spotify', async function(req, res) {
         res.redirect(`/spotify-redirect?grant_type=authorization_code&code=${user.refreshToken}&redirect_uri=${process.env.SPOTIFY_REDIRECT_URI}`)
         return
       }
-      res.redirect('/home')
+      res.status(200).send()
     }
   }
 })

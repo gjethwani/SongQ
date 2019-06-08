@@ -11,16 +11,17 @@
             var email = document.getElementById('email').value
             var password = document.getElementById('password').value
             var xhttp = new XMLHttpRequest();
-            // xhttp.onreadystatechange = function() {
-            //     if (this.readyState == 4 && this.status == 200) {
-            //     document.getElementById("demo").innerHTML = this.responseText
-            //     }
-            // };
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText)
+                }
+            };
             xhttp.open("POST", "http://localhost:5000/login", true)
             xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
-            // xhttp.setRequestHeader('Access-Control-Allow-Origin', '*, https://accounts.spotify.com/logi')
-            xhttp.setRequestHeader('Access-Control-Allow-Method', 'GET, POST, PATCH, PUT, DELETE, OPTIONS')
-            xhttp.setRequestHeader('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token')
+            // xhttp.setRequestHeader('Access-Control-Allow-Origin', '*')
+            // xhttp.setRequestHeader('Access-Control-Allow-Method', 'GET, POST, PATCH, PUT, DELETE, OPTIONS')
+            // xhttp.setRequestHeader('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token')
+            xhr.responseType = "document"
             xhttp.send(`email=${email}&password=${password}`)
         }
     </script>

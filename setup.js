@@ -25,14 +25,17 @@ const routes = [
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
+    callback(null, true)
+    // if (whitelist.indexOf(origin) !== -1) {
+    //   callback(null, true)
+    // } else {
+    //   callback(new Error('Not allowed by CORS'))
+    // }
   },
   credentials: true
 }
+
+app.use(cors(corsOptions))
   
 // app.options(routes, cors(corsOptions))
   
@@ -44,7 +47,6 @@ app.use(session({
 }))
 app.use(passport.initialize())
 app.use(passport.session())
-app.use(cors())
 
 module.exports = {
     app,
