@@ -3,7 +3,7 @@ require('dotenv').config({
 })
 const { knex } = require('./knex')
 const { passport } = require('./passport')
-const { app, corsOptions } = require('./setup')
+const { app } = require('./setup')
 const bcrypt = require('bcrypt')
 const request = require('request')
 
@@ -119,12 +119,10 @@ app.post('/sign-up', async function(req, res) {
   }
 })
 
-// app.post('/login', cors(corsOptions), passport.authenticate('local', {successRedirect: '/authenticate-spotify', failureRedirect: '/'}))
-
 app.post('/login', function(req, res, next) {
   passport.authenticate('local', function(err, user, info) {
     if (err) { return next(err) }
-    if (!user) { return res.redirect('/') }
+    if (!user) { return res.redirect(process.env.FRONT_END_URI) }
     req.logIn(user, function(err) {
       if (err) { return next(err) }
       return res.redirect('/authenticate-spotify?justSignedUp=false')
@@ -142,18 +140,6 @@ app.get('/spotify-login', function(req, res) {
       '&client_id=' + process.env.SPOTIFY_CLIENT_ID +
       (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
       '&redirect_uri=' + encodeURIComponent(process.env.SPOTIFY_REDIRECT_URI))
-    // axios.get('https://accounts.spotify.com/authorize' +
-    //   '?response_type=code' +
-    //   '&client_id=' + process.env.SPOTIFY_CLIENT_ID +
-    //   (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
-    //   '&redirect_uri=' + encodeURIComponent(process.env.SPOTIFY_REDIRECT_URI))
-    //   .then(function(response) {
-    //     res.set('Content-Type', 'text/html');
-    //     res.send(new Buffer(response.data))
-    //   })
-    //   .catch(function(error) {
-    //     console.log(error)
-    //   })
   }
 })
 
@@ -202,7 +188,7 @@ app.get('/spotify-redirect', function(req, res) {
           expiresAt
         })
           .then(function() {
-            res.status(200).send()
+            res.redirect(`${process.env.FRONT_END_URI}/home`)
           })
           .catch(function(err) {
             res.status(500).json({ err })
@@ -255,19 +241,73 @@ app.get('/authenticate-spotify', async function(req, res) {
       justSignedUp = false
     }
     if (justSignedUp) {
-      res.redirect('/spotify-login')
+      res.status(200).json({ 
+        needToSpotifyAuth: true,
+        spotifyRefresh: false
+      })
       return
     } else {
       var user = await getUser(req.user)
       if (user.accessToken === null) {
-        res.redirect('/spotify-login')
+        res.status(200).json({ 
+          needToSpotifyAuth: true,
+          spotifyRefresh: false
+        })
         return
       }
       if ((user.expiresAt - getCurrentUnixTimeStamp()) <= 0) {
-        res.redirect(`/spotify-redirect?grant_type=authorization_code&code=${user.refreshToken}&redirect_uri=${process.env.SPOTIFY_REDIRECT_URI}`)
+        res.status(200).json({
+          needToSpotifyAuth: true,
+          spotifyRefresh: true
+        })
         return
       }
-      res.status(200).send()
+      res.status(200).json({
+        needToSpotifyAuth: false
+      })
+    }
+  }
+})
+
+// TODO: Update access and refresh tokens
+app.get('/spotify-refresh-token', async function(req, res) {
+  if (!req.user) {
+    res.status(401).send()
+  } else {
+    var user = await getUser(req.user)
+    var { refreshToken } = user
+    if (!refreshToken) {
+      res.status(500).json({
+        err: 'No refresh token'
+      })
+      return
+    } else {
+      var authOptions = {
+        url: 'https://accounts.spotify.com/api/token',
+        headers: { 'Authorization': 'Basic ' + (new Buffer(process.env.SPOTIFY_CLIENT_ID + ':' + process.env.SPOTIFY_CLIENT_SECRET).toString('base64')) },
+        form: {
+          grant_type: 'refresh_token',
+          refresh_token: refreshToken
+        },
+        json: true
+      }
+      request.post(authOptions, function(error, response, body) {
+        if (!error && response.statusCode === 200) {
+          var accessToken = body.access_token
+          var expiresIn = body.expires_in
+          var expiresAt = getCurrentUnixTimeStamp() + expiresIn
+          updateSpotifyDetails(req.user, { 
+            accessToken, 
+            expiresAt 
+          })
+            .then(function() {
+              res.redirect(`${process.env.FRONT_END_URI}/home`)
+            })
+            .catch(function(err) {
+              res.status(500).json({ err })
+            })
+        }
+      })
     }
   }
 })
