@@ -6,6 +6,7 @@ const { passport } = require('./passport')
 const { app } = require('./setup')
 const bcrypt = require('bcrypt')
 const request = require('request')
+const { spotifyApi } = require('./spotify')
 
 app.set('view-engine', 'ejs')
 
@@ -182,6 +183,8 @@ app.get('/spotify-redirect', function(req, res) {
             expiresIn = body.expires_in
 
         var expiresAt = getCurrentUnixTimeStamp() + expiresIn
+        spotifyApi.setAccessToken(accessToken)
+        spotifyApi.setRefreshToken(refreshToken)
         updateSpotifyDetails(req.user, {
           accessToken,
           refreshToken,
@@ -296,6 +299,7 @@ app.get('/spotify-refresh-token', async function(req, res) {
           var accessToken = body.access_token
           var expiresIn = body.expires_in
           var expiresAt = getCurrentUnixTimeStamp() + expiresIn
+          spotifyApi.setAccessToken(accessToken)
           updateSpotifyDetails(req.user, { 
             accessToken, 
             expiresAt 
