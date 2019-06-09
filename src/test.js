@@ -1,4 +1,4 @@
-var { validateEmail, validatePassword } = require('./app')
+var { validateEmail, validatePassword } = require('.handlers/sign-up')
 var assert = require('assert')
 
 describe('Email Validation', function() {

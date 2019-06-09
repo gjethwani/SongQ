@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "mocha",
-    "start": "nodemon app.js"
+    "start": "nodemon src/app.js"
   },
   "repository": {
     "type": "git",
@@ -24,7 +24,6 @@
     "bookshelf": "^0.14.2",
     "cors": "^2.8.5",
     "dotenv": "^8.0.0",
-    "ejs": "^2.6.1",
     "express": "^4.17.1",
     "express-session": "^1.16.1",
     "knex": "^0.17.3",
