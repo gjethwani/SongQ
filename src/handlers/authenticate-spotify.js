@@ -1,4 +1,5 @@
 const { getCurrentUnixTimeStamp, getUser } = require('../util')
+const { spotifyApi } = require('../spotify')
 
 const authenticateSpotifyHandler = async function(req, res) {
     if (!req.user) {
@@ -32,6 +33,8 @@ const authenticateSpotifyHandler = async function(req, res) {
           })
           return
         }
+        spotifyApi.setAccessToken(user.accessToken)
+        spotifyApi.setRefreshToken(user.refreshToken)
         res.status(200).json({
           needToSpotifyAuth: false
         })

@@ -1,5 +1,6 @@
 const { spotifyApi } = require('../spotify')
 const { getCurrentUnixTimeStamp, getUser, updateSpotifyDetails } = require('../util')
+const request = require('request')
 
 const spotifyRefreshTokenHandler = async function(req, res) {
     if (!req.user) {
