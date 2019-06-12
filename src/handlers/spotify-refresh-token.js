@@ -32,7 +32,7 @@ const spotifyRefreshTokenHandler = async function(req, res) {
               expiresAt 
             })
               .then(function() {
-                res.redirect(`${process.env.FRONT_END_URI}/home`)
+                res.status(200).send()
               })
               .catch(function(err) {
                 res.status(500).json({ err })

@@ -11,6 +11,8 @@ const { checkPlaylistExistsHandler } = require('./handlers/check-playlist-exists
 const { searchSongsHandler } = require('./handlers/search-songs')
 const { makeRequestHandler } = require('./handlers/make-request')
 const { getPlaylistsHandler } = require('./handlers/get-playlists')
+const { getRequestsHandler } = require('./handlers/get-requests')
+const { serviceRequestHandler } = require('./handlers/service-request')
 
 app.post('/sign-up', signUpHandler)
 
@@ -34,7 +36,11 @@ app.post('/search-songs', searchSongsHandler)
 
 app.post('/make-request', makeRequestHandler)
 
-app.get('/get-playlists', getPlaylistsHandler)
+app.get('/get-playlists', getPlaylistsHandler) //https://stackoverflow.com/questions/55247812/passport-session-works-with-postman-but-doesnt-work-with-browser
+
+app.get('/get-requests', getRequestsHandler)
+
+app.post('/service-request', serviceRequestHandler)
 
 const port = process.env.PORT || 5000
 app.listen(port, function () {

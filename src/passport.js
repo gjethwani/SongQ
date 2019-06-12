@@ -42,11 +42,9 @@ passport.deserializeUser(function(id, done) {
     knex('Users')
         .where({ email: id})
         .then(function(rows) {
-          console.log("here1")
             return done(null, rows[0].email)
         })
         .catch(function(err) {
-          console.log("here2")
             return done(err, null)
         })
 })

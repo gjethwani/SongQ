@@ -1,9 +1,9 @@
-const { knex } = require('../knex')
+const { knex } = require('knex')
 
-function getPlaylists(owner) {
+function getRequests(roomCode) {
     return new Promise(function(resolve, reject) {
-        knex("Playlists")
-            .where({ owner })
+        knex('Requests')
+            .where({ roomCode, serviced: false })
             .then(function(rows) {
                 resolve(rows)
             })
@@ -13,25 +13,23 @@ function getPlaylists(owner) {
     })
 }
 
-const getPlaylistsHandler = function(req, res) {
+const getRequestsHandler = function() {
     if (!req.user) {
         res.status(401).send()
     } else {
-        var { user } = req
-        getPlaylists(user)
+        var { roomCode } = req.query
+        getRequests(roomCode)
             .then(function(rows) {
-                res.status(200).json({
-                    playlists: rows
+                res.status(200).json({ 
+                    requests: rows 
                 })
             })
             .catch(function(err) {
-                console.log(err)
                 res.status(500).json({ err })
             })
     }
 }
 
 module.exports = {
-    getPlaylistsHandler,
-    getPlaylists
+    getRequestsHandler
 }
