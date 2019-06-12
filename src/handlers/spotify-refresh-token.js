@@ -1,4 +1,3 @@
-const { spotifyApi } = require('../spotify')
 const { getCurrentUnixTimeStamp, getUser, updateSpotifyDetails } = require('../util')
 const request = require('request')
 
@@ -28,7 +27,6 @@ const spotifyRefreshTokenHandler = async function(req, res) {
             var accessToken = body.access_token
             var expiresIn = body.expires_in
             var expiresAt = getCurrentUnixTimeStamp() + expiresIn
-            spotifyApi.setAccessToken(accessToken)
             updateSpotifyDetails(req.user, { 
               accessToken, 
               expiresAt 

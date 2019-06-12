@@ -1,6 +1,30 @@
 const request = require('request')
-const { spotifyApi } = require('../spotify')
 const { getCurrentUnixTimeStamp, updateSpotifyDetails } = require('../util')
+
+function getSpotifyId(accessToken) {
+  var options = {
+    url: 'https://api.spotify.com/v1/me',
+    headers: {
+      'Authorization': `Bearer ${accessToken}` 
+    },
+    json: true
+  }
+  return new Promise(function(resolve, reject) {
+    request.get(options, function(error, response, body) {
+      if (error) {
+        reject({ err: error })
+      } else if (response.statusCode !== 200) {
+        reject({ err: `${response.statusCode}`})
+      } else {
+        if (body.error) {
+          reject(body.error)
+        } else {
+          resolve(body.id)
+        }
+      }
+    })
+  })
+}
 
 const spotifyRedirectHandler = function(req, res) {
     if (!req.user) {
@@ -19,7 +43,7 @@ const spotifyRedirectHandler = function(req, res) {
         },
         json: true
       }
-      request.post(authOptions, function(error, response, body) {
+      request.post(authOptions, async function(error, response, body) {
         if (!error && response.statusCode === 200) {
   
           var accessToken = body.access_token,
@@ -27,12 +51,15 @@ const spotifyRedirectHandler = function(req, res) {
               expiresIn = body.expires_in
   
           var expiresAt = getCurrentUnixTimeStamp() + expiresIn
-          spotifyApi.setAccessToken(accessToken)
-          spotifyApi.setRefreshToken(refreshToken)
+          var spotifyId = await getSpotifyId(accessToken)
+            .catch(function(err) {
+              res.status(500).json({ err })
+            })
           updateSpotifyDetails(req.user, {
             accessToken,
             refreshToken,
-            expiresAt
+            expiresAt,
+            spotifyId
           })
             .then(function() {
               res.redirect(`${process.env.FRONT_END_URI}/home`)

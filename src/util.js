@@ -38,8 +38,20 @@ function getUser(email) {
     })
 }
 
+function isClientCredentialsTokenValid(ccTokenInfo) {
+  if (!ccTokenInfo) {
+    return false
+  }
+  var { expiresAt } = ccTokenInfo
+  if ((expiresAt - getCurrentUnixTimeStamp()) <= 0) {
+    return false
+  }
+  return true
+}
+
 module.exports = {
     getCurrentUnixTimeStamp,
     updateSpotifyDetails,
-    getUser
+    getUser,
+    isClientCredentialsTokenValid
 }
