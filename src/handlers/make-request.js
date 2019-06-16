@@ -20,9 +20,8 @@ const makeRequestHandler = function(req, res) {
     if (!isClientCredentialsTokenValid(ccTokenInfo)) {
         res.status(401).send()
     } else {
-        console.log("hello")
-        const { roomCode, songId, songName, artists, album } = req.body
-        if (!roomCode || !songId || !songName || !artists || !album) {
+        const { roomCode, songId, songName, artists, album, albumArt } = req.body
+        if (!roomCode || !songId) {
             req.status(400).send()
             return
         }
@@ -32,6 +31,7 @@ const makeRequestHandler = function(req, res) {
             songName,
             artists,
             album,
+            albumArt,
             serviced: false
         }
         makeRequest(requestData)
