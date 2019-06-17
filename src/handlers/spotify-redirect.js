@@ -55,7 +55,7 @@ const spotifyRedirectHandler = function(req, res) {
             .catch(function(err) {
               res.status(500).json({ err })
             })
-          updateSpotifyDetails(req.user, {
+          updateSpotifyDetails(req.user, { //TODO: handle same spotify id
             accessToken,
             refreshToken,
             expiresAt,
@@ -66,6 +66,8 @@ const spotifyRedirectHandler = function(req, res) {
               res.redirect(`${process.env.FRONT_END_URI}/home`)
             })
             .catch(function(err) {
+              console.log("here1")
+              console.log(err)
               res.status(500).json({ err })
             })
         } else {

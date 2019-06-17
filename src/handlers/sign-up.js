@@ -94,21 +94,18 @@ const signUpHandler = async function(req, res) {
       })
       return
     } else {
-      await addUser(email, password)
+      addUser(email, password)
         .then(function() {
           req.logIn(email, function(){})
+          res.status(200).send()
         })
         .catch(function(err) {
           serverErr = err
-        })
-      if (serverErr !== '') {
           console.log(serverErr)
-        res.status(500).json({
-          err: serverErr
+          res.status(500).json({
+            err: serverErr
+          })
         })
-        return
-      }
-      res.redirect('/authenticate-spotify?justSignedUp=true')
     }
 }
 
