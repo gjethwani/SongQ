@@ -1,12 +1,20 @@
+const { knex } = require('../knex')
+
 function checkPlaylistExists(roomCode) {
     return new Promise(function(resolve, reject) {
         knex('Playlists')
             .where({ roomCode })
             .then(function(rows) {
                 if (rows.length === 0) {
-                    resolve(false)
+                    resolve({
+                        playlistExists: false,
+                        playlistName: ''
+                    })
                 } else {
-                    resolve(true)
+                    resolve({
+                        playlistExists: true,
+                        playlistName: rows[0].playlistName
+                    })
                 }
             })
             .catch(function(err) {
@@ -18,10 +26,11 @@ function checkPlaylistExists(roomCode) {
 const checkPlaylistExistsHandler = function(req, res) {
     var { roomCode } = req.body
     checkPlaylistExists(roomCode)
-        .then(function(exists) {
-            res.status(200).json({ exists })
+        .then(function(playlistDetails) {
+            res.status(200).json(playlistDetails)
         })
         .catch(function(err) {
+            console.log(err)
             res.status(500).json({ err })
         })
 }
