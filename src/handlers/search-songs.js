@@ -10,7 +10,7 @@ const searchSongsHandler = function(req, res) {
         var { token } = ccTokenInfo
         var type = "track"
         var options = {
-            url: `https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=${type}`,
+            url: `https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=${type}&limit=50`,
             headers: {
                 'Authorization': `Bearer ${token}`
             },
