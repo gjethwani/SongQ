@@ -1,4 +1,4 @@
-const { knex } = require('knex')
+const { knex } = require('../knex')
 
 function getRequests(roomCode) {
     return new Promise(function(resolve, reject) {
@@ -13,7 +13,7 @@ function getRequests(roomCode) {
     })
 }
 
-const getRequestsHandler = function() {
+const getRequestsHandler = function(req, res) {
     if (!req.user) {
         res.status(401).send()
     } else {
@@ -25,6 +25,7 @@ const getRequestsHandler = function() {
                 })
             })
             .catch(function(err) {
+                console.log(err)
                 res.status(500).json({ err })
             })
     }
