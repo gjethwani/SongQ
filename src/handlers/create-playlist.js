@@ -46,7 +46,12 @@ const createPlaylistHandler = async function(req, res) {
     if (!req.user) {
         res.status(401).send()
     } else {
-        const { playlistName, playlistIsByLocation, playlistIsPublic } = req.body
+        const { 
+            playlistName, 
+            playlistIsByLocation, 
+            playlistIsPublic, 
+            useExistingPlaylist,
+            playlistId } = req.body
         var playlistData = { playlistName }
         playlistData.owner = req.user
         if (playlistIsByLocation) {
@@ -78,23 +83,34 @@ const createPlaylistHandler = async function(req, res) {
             },
             json: true
         }
-        request.post(options, function(error, response, body) {
-            if (!error && response.statusCode === 201) { 
-                playlistData.spotifyPlaylistId = response.body.id
-                insertPlaylistIntoDatabase(playlistData)
-                    .then(function() {
-                        res.status(200).send()
+        if (!useExistingPlaylist) {
+            request.post(options, function(error, response, body) {
+                if (!error && response.statusCode === 201) { 
+                    playlistData.spotifyPlaylistId = response.body.id
+                    insertPlaylistIntoDatabase(playlistData)
+                        .then(function() {
+                            res.status(200).send()
+                        })
+                        .catch(function(err) {
+                            res.status(500).json({ err })
+                        })
+                } else {
+                    res.status(response.statusCode).json({
+                        body: response.body,
+                        err: error
                     })
-                    .catch(function(err) {
-                        res.status(500).json({ err })
-                    })
-            } else {
-                res.status(response.statusCode).json({
-                    body: response.body,
-                    err: error
+                }
+            })
+        } else {
+            playlistData.spotifyPlaylistId = playlistId
+            insertPlaylistIntoDatabase(playlistData)
+                .then(function() {
+                    res.status(200).send()
                 })
-            }
-        })
+                .catch(function(err) {
+                    res.status(500).json({ err })
+                })
+        }
     }
 }
 

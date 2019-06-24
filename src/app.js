@@ -13,6 +13,7 @@ const { makeRequestHandler } = require('./handlers/make-request')
 const { getPlaylistsHandler } = require('./handlers/get-playlists')
 const { getRequestsHandler } = require('./handlers/get-requests')
 const { serviceRequestHandler } = require('./handlers/service-request')
+const { getExistingPlaylistsHandler } = require('./handlers/get-existing-playlists')
 
 app.post('/sign-up', signUpHandler)
 
@@ -41,6 +42,8 @@ app.get('/get-playlists', getPlaylistsHandler) //https://stackoverflow.com/quest
 app.get('/get-requests', getRequestsHandler)
 
 app.post('/service-request', serviceRequestHandler)
+
+app.post('/get-existing-playlists', getExistingPlaylistsHandler)
 
 const port = process.env.PORT || 5000
 app.listen(port, function () {
