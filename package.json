@@ -2,7 +2,7 @@
   "name": "songq",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "src/app.js",
   "scripts": {
     "test": "mocha",
     "start": "nodemon src/app.js"
