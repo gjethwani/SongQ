@@ -53,7 +53,7 @@ const spotifyRedirectHandler = function(req, res) {
           var expiresAt = getCurrentUnixTimeStamp() + expiresIn
           var spotifyId = await getSpotifyId(accessToken)
             .catch(function(err) {
-              res.status(500).json({ err })
+              res.status(500).json({ err: JSON.stringify(err) })
             })
           updateSpotifyDetails(req.user, { //TODO: handle same spotify id
             accessToken,
@@ -67,7 +67,7 @@ const spotifyRedirectHandler = function(req, res) {
             })
             .catch(function(err) {
               console.log(err)
-              res.status(500).json({ err })
+              res.status(500).json({ err: JSON.stringify(err) })
             })
         } else {
           if (error) {

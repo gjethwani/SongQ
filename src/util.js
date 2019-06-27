@@ -55,3 +55,29 @@ module.exports = {
     getUser,
     isClientCredentialsTokenValid
 }
+
+/* Distance calculator https://www.movable-type.co.uk/scripts/latlong.html */
+// function toRadians(angle) {
+//   return (angle/180) * Math.PI
+// }
+
+// var lat1 = 53.2734
+// var lon1 = -7.77832031
+
+// var lat2 = 3.1524568
+// var lon2 = 101.64879040000001
+
+// var R = 6371e3; // metres
+// var φ1 = toRadians(lat1);
+// var φ2 = toRadians(lat2);
+// var Δφ = toRadians(lat2-lat1);
+// var Δλ = toRadians(lon2-lon1);
+
+// var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+//       Math.cos(φ1) * Math.cos(φ2) *
+//       Math.sin(Δλ/2) * Math.sin(Δλ/2);
+// var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+// var d = R * c;
+
+// console.log(d)

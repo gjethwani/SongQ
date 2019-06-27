@@ -44,7 +44,7 @@ const serviceRequestHandler = function(req, res) {
                                 res.status(200).send()
                             })
                             .catch(function(err) {
-                                res.status(500).json({ err })
+                                res.status(500).json({ err: JSON.stringify(err) })
                             })
                     } else {
                         res.status(response.statusCode).json({
@@ -55,7 +55,7 @@ const serviceRequestHandler = function(req, res) {
                 })
             })
             .catch(function(err) {
-                res.status(500).json({ err })
+                res.status(500).json({ err: JSON.stringify(err) })
             })
     }
 }

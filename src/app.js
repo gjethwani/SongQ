@@ -14,6 +14,7 @@ const { getPlaylistsHandler } = require('./handlers/get-playlists')
 const { getRequestsHandler } = require('./handlers/get-requests')
 const { serviceRequestHandler } = require('./handlers/service-request')
 const { getExistingPlaylistsHandler } = require('./handlers/get-existing-playlists')
+const { getNearbyPlaylistsHandler } = require('./handlers/get-nearby-playlists')
 
 app.post('/sign-up', signUpHandler)
 
@@ -44,6 +45,8 @@ app.get('/get-requests', getRequestsHandler)
 app.post('/service-request', serviceRequestHandler)
 
 app.post('/get-existing-playlists', getExistingPlaylistsHandler)
+
+app.get('/get-nearby-playlists', getNearbyPlaylistsHandler)
 
 const port = process.env.PORT || 5000
 app.listen(port, function () {

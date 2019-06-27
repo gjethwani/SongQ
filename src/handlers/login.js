@@ -3,7 +3,7 @@ const { passport } = require('../passport')
 const logInHandler = function(req, res, next) {
     passport.authenticate('local', { failureFlash: true}, function(err, user, info) {
       if (err) { 
-        res.status(500).json({ err }) 
+        res.status(500).json({ err: JSON.stringify(err) }) 
       }
       if (!user) { 
         return res.status(401).json({
@@ -12,7 +12,7 @@ const logInHandler = function(req, res, next) {
       }
       req.logIn(user, function(err) {
         if (err) { 
-          res.status(500).send({ err })
+          res.status(500).send({ err: JSON.stringify(err) })
           return
         }
         return res.redirect('/authenticate-spotify?justSignedUp=false')

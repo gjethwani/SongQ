@@ -38,7 +38,7 @@ const getExistingPlaylistsHandler = function(req, res) {
                 })
             })
             .catch(function(err) {
-                res.status(500).json({ err })
+                res.status(500).json({ err: JSON.stringify(err) })
             })
     }
 }

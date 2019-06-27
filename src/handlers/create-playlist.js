@@ -51,25 +51,30 @@ const createPlaylistHandler = async function(req, res) {
             playlistIsByLocation, 
             playlistIsPublic, 
             useExistingPlaylist,
-            playlistId } = req.body
+            playlistId,
+        } = req.body
         var playlistData = { playlistName }
         playlistData.owner = req.user
+        if (!playlistName) {
+            res.status(400).json({
+                'err': 'no playlist name'
+            })
+        }
         if (playlistIsByLocation) {
-            const { latitude, longitude } = req.boy
+            const { latitude, longitude } = req.body
             playlistData.latitude = latitude
             playlistData.longitude = longitude
-        } else {
-            var roomCode
-            var unique = false
-            while (!unique) {
-                roomCode = generateRoomCode(4)
-                unique = await isRoomCodeUnique(roomCode)
-            }
-            playlistData.roomCode = roomCode
         }
+        var roomCode
+        var unique = false
+        while (!unique) {
+            roomCode = generateRoomCode(4)
+            unique = await isRoomCodeUnique(roomCode)
+        }
+        playlistData.roomCode = roomCode
         var user = await getUser(req.user)
             .catch(function(err) {
-                res.status(500).json({ err })
+                res.status(500).json({ err: JSON.stringify(err) })
                 return
             })
         var options = {
@@ -83,6 +88,7 @@ const createPlaylistHandler = async function(req, res) {
             },
             json: true
         }
+        console.log(useExistingPlaylist)
         if (!useExistingPlaylist) {
             request.post(options, function(error, response, body) {
                 if (!error && response.statusCode === 201) { 
@@ -92,7 +98,7 @@ const createPlaylistHandler = async function(req, res) {
                             res.status(200).send()
                         })
                         .catch(function(err) {
-                            res.status(500).json({ err })
+                            res.status(500).json({ err: JSON.stringify(err) })
                         })
                 } else {
                     res.status(response.statusCode).json({
@@ -108,7 +114,7 @@ const createPlaylistHandler = async function(req, res) {
                     res.status(200).send()
                 })
                 .catch(function(err) {
-                    res.status(500).json({ err })
+                    res.status(500).json({ err: JSON.stringify(err) })
                 })
         }
     }
