@@ -6,6 +6,8 @@ const logInHandler = function(req, res, next) {
         res.status(500).json({ err: JSON.stringify(err) }) 
       }
       if (!user) { 
+        console.log("here1")
+        console.log(info)
         return res.status(401).json({
           err: info
         }) 

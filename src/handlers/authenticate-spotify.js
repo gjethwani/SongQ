@@ -2,6 +2,7 @@ const { getCurrentUnixTimeStamp, getUser } = require('../util')
 
 const authenticateSpotifyHandler = async function(req, res) {
     if (!req.user) {
+      console.log("here2")
       res.status(401).send()
     } else {
       var user = await getUser(req.user)
