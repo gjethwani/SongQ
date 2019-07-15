@@ -1,6 +1,7 @@
 const { passport } = require('../passport')
 
 const logInHandler = function(req, res, next) {
+  console.log(process.env)
     passport.authenticate('local', { failureFlash: true}, function(err, user, info) {
       if (err) { 
         res.status(500).json({ err: JSON.stringify(err) }) 
