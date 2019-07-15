@@ -3,7 +3,7 @@ require('dotenv').config({
 })
 const express = require('express')
 const bodyParser = require('body-parser')
-const session = require('express-session')
+const cookieSession = require('cookie-session')
 const cors = require('cors')
 const { passport } = require('./passport')
 
@@ -43,10 +43,17 @@ app.use(cors(corsOptions))
 // app.options(routes, cors(corsOptions))
   
 app.use(express.static("public"))
-app.use(session({ 
-    secret: "cats",
-    saveUninitialized: true,
-    resave: false
+// app.use(session({ 
+//     secret: "cats",
+//     saveUninitialized: true,
+//     resave: false
+// }))
+app.use(cookieSession({
+  name: 'session',
+  keys: ['cats'],
+
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
 app.use(passport.initialize())
 app.use(passport.session())
