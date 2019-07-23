@@ -1,9 +1,10 @@
 const { passport } = require('../passport')
 
 const logInHandler = function(req, res, next) {
-  console.log("here1")
     passport.authenticate('local', { failureFlash: true}, function(err, user, info) {
       if (err) { 
+        console.log("here2")
+        console.log(err)
         res.status(500).json({ err: JSON.stringify(err) }) 
       }
       if (!user) { 
@@ -12,10 +13,12 @@ const logInHandler = function(req, res, next) {
         }) 
       }
       req.logIn(user, function(err) {
+        console.log("here3")
         if (err) { 
           res.status(500).send({ err: JSON.stringify(err) })
           return
         }
+        console.log("here4")
         return res.redirect('/authenticate-spotify?justSignedUp=false')
       })
     })(req, res, next)

@@ -1,12 +1,14 @@
 const { getCurrentUnixTimeStamp, getUser } = require('../util')
 
 const authenticateSpotifyHandler = async function(req, res) {
+  console.log("here7")
     if (!req.user) {
-      console.log("here2")
+      console.log("here8")
       res.status(401).send()
     } else {
       var user = await getUser(req.user)
       if (user.accessToken === null) {
+        console.log("here5")
         res.status(200).json({ 
           needToSpotifyAuth: true,
           spotifyRefresh: false
@@ -20,6 +22,7 @@ const authenticateSpotifyHandler = async function(req, res) {
         })
         return
       }
+      console.log("here6")
       res.status(200).json({
         needToSpotifyAuth: false
       })
