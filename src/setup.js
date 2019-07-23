@@ -31,7 +31,8 @@ var mongooseOptions = {
   reconnectTries: 30, // max number of retries
   keepAlive: true, // keep alive for long running connections
   poolSize: 10, // Maintain up to 10 socket connections
-  bufferMaxEntries: 0 // If not connected, return errors immediately rather than waiting for reconnect
+  bufferMaxEntries: 0, // If not connected, return errors immediately rather than waiting for reconnect
+  useNewUrlParser: true
 };
 
 mongoose.Promise = global.Promise; // clear mongo's promise depreciation warning : https://github.com/Automattic/mongoose/issues/4291
