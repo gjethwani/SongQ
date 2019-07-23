@@ -76,7 +76,7 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 console.log("MONGO URI")
-console.log(proess.env.MONGODB_URI)
+console.log(process.env.MONGODB_URI)
 
 module.exports = {
     app,
