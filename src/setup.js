@@ -58,11 +58,12 @@ var corsWhitelist = (process.env.CORS).split(",")
 console.log("CORS Whitelist:\n", corsWhitelist)
 var corsOptions = {
   origin: function (origin, callback) {
-    if (corsWhitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
+    callback(null, true)
+    // if (corsWhitelist.indexOf(origin) !== -1) {
+    //   callback(null, true)
+    // } else {
+    //   callback(new Error('Not allowed by CORS'))
+    // }
   },
   credentials: true
 }
