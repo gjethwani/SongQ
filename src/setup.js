@@ -75,6 +75,9 @@ app.use(express.static("public"))
 app.use(passport.initialize())
 app.use(passport.session())
 
+console.log("MONGO URI")
+console.log(proess.env.MONGODB_URI)
+
 module.exports = {
     app,
 }
