@@ -37,6 +37,9 @@ var mongooseOptions = {
 
 mongoose.Promise = global.Promise; // clear mongo's promise depreciation warning : https://github.com/Automattic/mongoose/issues/4291
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/boilerplate', mongooseOptions)
+  .catch(err => {
+    console.log(err)
+  })
 
 var sessionOptions = {
   secret: process.env.SESSION_SECRET,
