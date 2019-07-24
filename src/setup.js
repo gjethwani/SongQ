@@ -49,12 +49,13 @@ var sessionOptions = {
   resave: true,
   saveUninitialized: false,
   store: new SQLiteStore,
-  // cookie: {
-  //   // domain: 'localhost:8080',
-  //   // path: '/',
-  //   // domain: 'localhost',
-  //   maxAge: 1000 * 60 * 24 // 24 hours
-  // }
+  cookie: {
+    // domain: 'localhost:8080',
+    // path: '/',
+    // domain: 'localhost',
+    secure: false,
+    maxAge: 1000 * 60 * 24 // 24 hours
+  }
 }
 
 app.use(cookieParser(sessionOptions.secret)); // read cookies (needed for auth)
