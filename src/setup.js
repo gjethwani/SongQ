@@ -50,7 +50,7 @@ var sessionOptions = {
   saveUninitialized: false,
   store: new SQLiteStore,
   cookie: {
-    // domain: 'localhost:8080',
+    domain: process.env.COOKIE_DOMAIN,
     // path: '/',
     // domain: 'localhost',
     secure: false,
