@@ -1,6 +1,7 @@
 const { app } = require('./setup')
 const { signUpHandler } = require('./handlers/sign-up')
 const { logInHandler } = require('./handlers/login')
+const { isLoggedInHandler } = require('./handlers/is-logged-in')
 const { spotifyLogInHandler } = require('./handlers/spotify-login')
 const { spotifyRedirectHandler } = require('./handlers/spotify-redirect')
 const { authenticateSpotifyHandler } = require('./handlers/authenticate-spotify')
@@ -19,6 +20,8 @@ const { getNearbyPlaylistsHandler } = require('./handlers/get-nearby-playlists')
 app.post('/sign-up', signUpHandler)
 
 app.post('/login', logInHandler)
+
+app.post('/is-logged-in', isLoggedInHandler)
 
 app.get('/spotify-login', spotifyLogInHandler)
 
