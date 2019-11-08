@@ -39,22 +39,33 @@ const serviceRequestHandler = function(req, res) {
                     },
                     json: true
                 }
-                request.post(options, function(error, response, body) {
-                    if (!error && response.statusCode !== 200) {
-                        serviceRequest(requestId, accepted)
-                            .then(function() {
-                                res.status(200).send()
+                if (accepted) {
+                    request.post(options, function(error, response, body) {
+                        if (!error && response.statusCode === 201) {
+                            serviceRequest(requestId, accepted)
+                                .then(function() {
+                                    res.status(200).send()
+                                })
+                                .catch(function(err) {
+                                    res.status(500).json({ err: JSON.stringify(err) })
+                                })
+                        } else {
+                            res.status(response.statusCode).json({
+                                body: response.body,
+                                err: error
                             })
-                            .catch(function(err) {
-                                res.status(500).json({ err: JSON.stringify(err) })
-                            })
-                    } else {
-                        res.status(response.statusCode).json({
-                            body: response.body,
-                            err: error
+                        }
+                    })
+                } else {
+                    serviceRequest(requestId, accepted)
+                        .then(function() {
+                            res.status(200).send()
                         })
-                    }
-                })
+                        .catch(function(err) {
+                            res.status(500).json({ err: JSON.stringify(err) })
+                        })
+                }
+                
             })
             .catch(function(err) {
                 res.status(500).json({ err: JSON.stringify(err) })
