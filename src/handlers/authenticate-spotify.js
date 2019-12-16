@@ -4,7 +4,6 @@ const authenticateSpotifyHandler = async function(req, res) {
     if (!req.user) {
       res.status(401).send()
     } else {
-      // var user = 
       getUser(req.user)
         .then(function(user) {
           if (user.accessToken === null) {

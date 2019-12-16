@@ -12,12 +12,15 @@ const compression = require('compression')
 const helmet = require('helmet')
 const morgan = require('morgan');
 const morganBody = require('morgan-body');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('../swagger.json');
 const app = express()
 
 const port = process.env.PORT || 5000;
 
+app.use('/api-docs', swaggerUi.serve)
 app.use(bodyParser.urlencoded({ extended: true }))
-app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.json({limit: '50mb'}))
 app.use(helmet())
 app.use(compression({level: 9}))
 app.use(morgan(`API Request (port ${port}): :method :url :status :response-time ms - :res[content-length]`));
@@ -59,4 +62,6 @@ app.use(passport.session())
 
 module.exports = {
     app,
+    swaggerUi,
+    swaggerDocument
 }

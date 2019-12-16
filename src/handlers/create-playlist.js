@@ -88,7 +88,6 @@ const createPlaylistHandler = async function(req, res) {
             },
             json: true
         }
-        console.log(useExistingPlaylist)
         if (!useExistingPlaylist) {
             request.post(options, function(error, response, body) {
                 if (!error && response.statusCode === 201) { 

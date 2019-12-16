@@ -21,8 +21,6 @@ const serviceRequestHandler = function(req, res) {
         res.status(401).send()
     } else {
         var { requestId, songId, playlistId, accepted } = req.body 
-        console.log(songId)
-        console.log(playlistId)
         if (!requestId || !songId || !playlistId || accepted === undefined) {
             res.status(400).send()
         }

@@ -1,4 +1,4 @@
-const { app } = require('./setup')
+const { app, swaggerUi, swaggerDocument } = require('./setup')
 const { signUpHandler } = require('./handlers/sign-up')
 const { logInHandler } = require('./handlers/login')
 const { isLoggedInHandler } = require('./handlers/is-logged-in')
@@ -50,6 +50,8 @@ app.post('/service-request', serviceRequestHandler)
 app.post('/get-existing-playlists', getExistingPlaylistsHandler)
 
 app.get('/get-nearby-playlists', getNearbyPlaylistsHandler)
+
+app.get('/api-docs', swaggerUi.setup(swaggerDocument))
 
 const port = process.env.PORT || 5000
 app.listen(port, function () {

@@ -1,0 +1,619 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "SongQ API",
+        "description": "SongQ Endpoint Reference",
+        "version": "0.0.1"
+    },
+    "servers": [
+        {
+            "url": "http://songq.io",
+            "description": "Production URL"
+        },
+        {
+            "url": "http://songq-node.herokuapp.com",
+            "description": "Heroku URL"
+        },
+        {
+            "url": "http://localhost:5000",
+            "description": "Local URL"
+        }
+    ],
+    "paths": {
+        "/sign-up": {
+            "post": {
+                "summary": "Signs a host up",
+                "description": "To create new users in the database and obtain their spotify credentials",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "body",
+                        "required": true,
+                        "description": "Email address of user",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "password",
+                        "in": "body",
+                        "required": true,
+                        "description": "User's password",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Indicates succesful sign up. No return value."
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "summary": "Logs a host in",
+                "description": "To authenticate and log in a user",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "body",
+                        "required": true,
+                        "description": "Email address of user",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "password",
+                        "in": "body",
+                        "required": true,
+                        "description": "User's password",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "User does not exist."
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/is-logged-in": {
+            "post": {
+                "summary": "Is the user logged in",
+                "description": "Checks whether the user is currently logged in"
+            }
+        },
+        "/spotify-login": {
+            "get": {
+                "summary": "Interaction with Spotify API",
+                "description": "Redirects to Spotify's OAuth Login Pagee"
+            },
+            "responses": {
+                "401": {
+                    "description": "User is not logged in"
+                }
+            }
+        },
+        "/spotify-redirect": {
+            "get": {
+                "summary": "Redirect from Spotify API",
+                "description": "Redirect after user goes through Spotify OAuth flow",
+                "parameters": [
+                    {
+                        "name": "code",
+                        "in": "query",
+                        "required": true,
+                        "description": "Code provided that can be exchanged for a token",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Spotify login succesful"
+                    },
+                    "401": {
+                        "description": "User is not logged in."
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/authenticate-spotify": {
+            "get": {
+                "summary": "Checks whether user is logged in with Spotify",
+                "description": "Determines whether there is a valid Spotify access tokenn associated with the user",
+                "responses": {
+                    "200": {
+                        "description": "Request processed succesfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "needToSpotifyAuth": {
+                                            "type": "boolean"
+                                        },
+                                        "spotifyRefresh": {
+                                            "type": "boolean"
+                                        },
+                                        "isLoggedIn": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "User is not logged in"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/spotify-refresh-token": {
+            "get": {
+                "summary": "Uses Spotify refesh token",
+                "description": "Gets new access token with refresh token",
+                "responses": {
+                    "401": {
+                        "description": "User is not logged in"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/create-playlist": {
+            "post": {
+                "summary": "Creates a playlist",
+                "description": "Inserts playlist details in database as well as create's new Spotify playlist",
+                "parameters": [
+                    {
+                        "name": "playlistName",
+                        "in": "body",
+                        "required": true,
+                        "description": "Name of the playlist",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "playlistIsByLocation",
+                        "in": "body",
+                        "required": true,
+                        "description": "Whether the playlist can be found by location",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "playlistIsPublic",
+                        "in": "body",
+                        "required": false,
+                        "description": "Whether the playlist is public on Spotify",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "useExistingPlaylist",
+                        "in": "body",
+                        "required": true,
+                        "description": "Whether the user is creating a new playlist or using an existing Spotify playlist",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "playlistId",
+                        "in": "body",
+                        "required": false,
+                        "description": "Id of the existing playlist",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Playlist was succesfully created"
+                    },
+                    "400": {
+                        "description": "No playlist name entered"
+                    },
+                    "401": {
+                        "description": "User is not logged in"
+                    }, 
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/guest-login": {
+            "post": {
+                "summary": "Get credentials from Spotify",
+                "description": "Get client credentials token from Spotify",
+                "responses": {
+                    "200": {
+                        "description": "Login succesful"
+                    }
+                }
+            }
+        },
+        "/check-playlist-exists": {
+            "post": {
+                "summary": "Check if playlist exists",
+                "description": "Check if room code is valid",
+                "parameters": [
+                    {
+                        "name": "roomCode",
+                        "in": "body",
+                        "required": true,
+                        "description": "Room code of the playlist",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Succesfully checked whether the playlist exists",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "playlistExists": {
+                                            "type": "boolean"
+                                        },
+                                        "playlistName": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/search-songs": {
+            "post": {
+                "summary": "Search for tracks",
+                "description": "Query the Spotify API with the search term",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "body",
+                        "required": true,
+                        "description": "Search query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Search was succesful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "results": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Client credentials token is invalid"
+                    }
+                }
+            }
+        },
+        "/make-request": {
+            "post": {
+                "summary": "Submit song request",
+                "description": "Enters song request into database",
+                "parameters": [
+                    {
+                        "name": "roomCode",
+                        "in": "body",
+                        "required": true,
+                        "description": "Room code of playlist",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "songId",
+                        "in": "body",
+                        "required": true,
+                        "description": "ID of desired song",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "songName",
+                        "in": "body",
+                        "required": false,
+                        "description": "Name of song",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "artists",
+                        "in": "body",
+                        "required": false,
+                        "description": "Artists of song",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "album",
+                        "in": "body",
+                        "required": false,
+                        "description": "Name of album",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "albumArt",
+                        "in": "body",
+                        "required": false,
+                        "description": "URLs to album art",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request succesfully made"
+                    },
+                    "400": {
+                        "description": "Missing parameters"
+                    },
+                    "401": {
+                        "description": "Client credentials token is invalid"
+                    }
+                }
+            }
+        },
+        "/get-playlists": {
+            "get": {
+                "summary": "Get all playlists",
+                "description": "Get a logged in user's playlists",
+                "responses": {
+                    "200": {
+                        "description": "Succesfully retrieved playlists",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "playlists": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "User is not logged in"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/get-requests": {
+            "get": {
+                "summary": "Get all requests",
+                "description": "Get all requests for a playlist",
+                "parameters": [
+                    {
+                        "name": "roomCode",
+                        "in": "query",
+                        "required": true,
+                        "description": "Room code of playlist",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Succesfully retrieved requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "requests": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "User is not logged in"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/service-request": {
+            "post": {
+                "summary": "Attends to request",
+                "description": "Changes request status to accepted or rejected",
+                "parameters": [
+                    {
+                        "name": "requestId",
+                        "in": "body",
+                        "required": true,
+                        "description": "ID of request",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "songId",
+                        "in": "body",
+                        "required": true,
+                        "description": "Spotify song ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "playlistId",
+                        "in": "body",
+                        "required": true,
+                        "description": "Spotify playlist ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "accepted",
+                        "in": "body",
+                        "required": true,
+                        "description": "Whether the playlist has been accepted or rejected",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request succesfully serviced"
+                    },
+                    "400": {
+                        "description": "Missing parameters"
+                    },
+                    "401": {
+                        "description": "User is not logged in"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/get-existing-playlists": {
+            "post": {
+                "summary": "Gets a user's existing playlists",
+                "description": "Gets their public, editable playlists",
+                "responses": {
+                    "200": {
+                        "description": "Existing playlists succesfully retrieved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "playlists": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "User is not logged in"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/get-nearby-playlists": {
+            "get": {
+                "summary": "Get playlists close to a user's location",
+                "description": "Use the user's coordinates to get nearby playlists",
+                "parameters": [
+                    {
+                        "name": "latitude",
+                        "in": "query",
+                        "required": true,
+                        "description": "Latitude of user",
+                        "schema": {
+                            "type": "decimal"
+                        }
+                    },
+                    {
+                        "name": "longitude",
+                        "in": "query",
+                        "required": true,
+                        "description": "Longitude of user",
+                        "schema": {
+                            "type": "decimal"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Nearby playlists succesfully retrieved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "playlists": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing latitude and or longitude"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        }
+    }
+}
