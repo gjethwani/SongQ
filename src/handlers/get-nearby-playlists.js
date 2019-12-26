@@ -3,13 +3,19 @@ const { knex } = require('../knex')
 /* https://gis.stackexchange.com/questions/142326/calculating-longitude-length-in-miles */
 function getNearbyPlaylists(latitude, longitude) {
     return new Promise(function(resolve, reject) {
-        knex('Playlists')
-            .whereBetween('latitude', [latitude - 0.125, latitude + 0.125])
-            .whereBetween('longitude', [longitude - 0.25, longitude + 0.25])
+        knex
+            .raw(`
+                SELECT *
+                FROM Playlists
+                WHERE latitude BETWEEN ${latitude - 0.125} AND ${parseFloat(latitude) + 0.125}
+                AND
+                longitude BETWEEN ${longitude - 0.125} AND ${parseFloat(longitude) + 0.125}
+            `)
             .then(function(rows) {
                 resolve(rows)
              })
             .catch(function(err) {
+                console.log(err)
                 reject(err)
             })
     })

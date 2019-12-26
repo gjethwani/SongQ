@@ -17,7 +17,7 @@ const guestLoginHandler = function(req, res) {
             req.session.ccTokenInfo = {
                 token: body.access_token,
                 expiresAt: getCurrentUnixTimeStamp() + body.expires_in
-            } 
+            }
             res.status(200).send()
         } else {
             res.status(response.statusCode).json({

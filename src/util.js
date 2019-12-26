@@ -49,11 +49,25 @@ function isClientCredentialsTokenValid(ccTokenInfo) {
   return true
 }
 
+function getPlaylists(owner) {
+  return new Promise(function(resolve, reject) {
+      knex("Playlists")
+          .where({ owner })
+          .then(function(rows) {
+              resolve(rows)
+          })
+          .catch(function(err) {
+              reject(err)
+          })
+  })
+}
+
 module.exports = {
     getCurrentUnixTimeStamp,
     updateSpotifyDetails,
     getUser,
-    isClientCredentialsTokenValid
+    isClientCredentialsTokenValid,
+    getPlaylists
 }
 
 /* Distance calculator https://www.movable-type.co.uk/scripts/latlong.html */

@@ -1,19 +1,7 @@
 const { knex } = require('../knex')
-const { getUser } = require('../util')
+const { getUser, getPlaylists } = require('../util')
 const request = require('request')
 
-function getPlaylists(owner) {
-    return new Promise(function(resolve, reject) {
-        knex("Playlists")
-            .where({ owner })
-            .then(function(rows) {
-                resolve(rows)
-            })
-            .catch(function(err) {
-                reject(err)
-            })
-    })
-}
 
 function getAlbumArt(playlists, token) {
     return new Promise(function(resolve, reject) {

@@ -1,5 +1,5 @@
 const request = require('request')
-const { getUser } = require('../util')
+const { getUser, getPlaylists } = require('../util')
 const { knex } = require('../knex')
 
 function insertPlaylistIntoDatabase(playlistData) {
@@ -34,7 +34,7 @@ function isRoomCodeUnique(roomCode) {
 }
 
 function generateRoomCode(length) {
-    var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    var chars = '0123456789abcdefghijklmnopqrstuvwxyz'
     var result = '';
     for (var i = length; i > 0; --i) {
         result += chars[Math.floor(Math.random() * chars.length)]
@@ -108,12 +108,26 @@ const createPlaylistHandler = async function(req, res) {
             })
         } else {
             playlistData.spotifyPlaylistId = playlistId
-            insertPlaylistIntoDatabase(playlistData)
-                .then(function() {
-                    res.status(200).send()
+            getPlaylists(req.user)
+                .then(function(rows) {
+                    for (let i = 0; i < rows.length; i++) {
+                        if (playlistId === rows[i].spotifyPlaylistId) {
+                            return res.status(400).json({
+                                err: 'playlist already used'
+                            })
+                        }
+                    }
+                    insertPlaylistIntoDatabase(playlistData)
+                        .then(function() {
+                            return res.status(200).send()
+                        })
+                        .catch(function(err) {
+                            return res.status(500).json({ err: JSON.stringify(err) })
+                        })
                 })
                 .catch(function(err) {
-                    res.status(500).json({ err: JSON.stringify(err) })
+                    console.log(err)
+                    return res.status(500).json({ err: JSON.stringify(err) })
                 })
         }
     }

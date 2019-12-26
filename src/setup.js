@@ -21,10 +21,10 @@ const port = process.env.PORT || 5000;
 app.use('/api-docs', swaggerUi.serve)
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json({limit: '50mb'}))
-app.use(helmet())
+// app.use(helmet())
 app.use(compression({level: 9}))
-app.use(morgan(`API Request (port ${port}): :method :url :status :response-time ms - :res[content-length]`));
-morganBody(app);
+// app.use(morgan(`API Request (port ${port}): :method :url :status :response-time ms - :res[content-length]`));
+// morganBody(app);
 
 var SQLiteStore = require('connect-sqlite3')(session);
 
