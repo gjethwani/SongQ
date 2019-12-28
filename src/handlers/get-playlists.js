@@ -22,7 +22,7 @@ function getAlbumArt(playlists, token) {
                         newPlaylists[i].image = body
                     }
                 } else {
-                    console.log(response.statusCode)
+                    // console.log(response.statusCode)
                     console.log(error)
                 }
                 callsMade++

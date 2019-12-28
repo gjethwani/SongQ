@@ -8,10 +8,9 @@ const spotifyRefreshTokenHandler = async function(req, res) {
       var user = await getUser(req.user)
       var { refreshToken } = user
       if (!refreshToken) {
-        res.status(500).json({
+        return res.status(500).json({
           err: 'No refresh token'
         })
-        return
       } else {
         var authOptions = {
           url: 'https://accounts.spotify.com/api/token',
@@ -32,8 +31,8 @@ const spotifyRefreshTokenHandler = async function(req, res) {
               expiresAt 
             })
               .then(function() {
-                // res.status(200).send()
-                res.redirect(`${process.env.FRONT_END_URI}/home`)
+                res.status(200).send()
+                // res.redirect(`${process.env.FRONT_END_URI}/home`)
               })
               .catch(function(err) {
                 res.status(500).json({ err: JSON.stringify(err) })

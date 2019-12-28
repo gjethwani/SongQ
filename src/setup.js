@@ -9,9 +9,9 @@ const { passport } = require('./passport')
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const compression = require('compression')
-const helmet = require('helmet')
-const morgan = require('morgan');
-const morganBody = require('morgan-body');
+// const helmet = require('helmet')
+// const morgan = require('morgan');
+// const morganBody = require('morgan-body');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('../swagger.json');
 const app = express()
@@ -43,12 +43,11 @@ var corsWhitelist = (process.env.CORS).split(",")
 console.log("CORS Whitelist:\n", corsWhitelist)
 var corsOptions = {
   origin: function (origin, callback) {
-    callback(null, true)
-    // if (corsWhitelist.indexOf(origin) !== -1) {
-    //   callback(null, true)
-    // } else {
-    //   callback(new Error('Not allowed by CORS'))
-    // }
+    if (corsWhitelist.indexOf(origin) !== -1) {
+      return callback(null, true)
+    } else {
+      return callback(new Error('Not allowed by CORS'))
+    }
   },
   credentials: true
 }
