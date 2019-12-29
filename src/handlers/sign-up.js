@@ -6,7 +6,7 @@ function validateEmail(email) {
     return re.test(String(email).toLowerCase())
 }
 
-function doesUserExists(email) {
+function doesUserExist(email) {
     return new Promise(function(resolve, reject) {
         knex('Users')
             .select('email')
@@ -71,7 +71,7 @@ const signUpHandler = async function(req, res) {
     if (!validateEmail(email)) {
       errs.push('Invalid email')
     }
-    var userExists = await doesUserExists(email)
+    var userExists = await doesUserExist(email)
       .catch(function(err) {
         serverErr = err
       })
