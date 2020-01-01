@@ -23,13 +23,13 @@ app.post('/login', logInHandler)
 
 app.post('/is-logged-in', isLoggedInHandler)
 
-app.get('/spotify-login', spotifyLogInHandler)
+app.post('/spotify-login', spotifyLogInHandler)
 
 app.get('/spotify-redirect', spotifyRedirectHandler)
 
 app.get('/authenticate-spotify', authenticateSpotifyHandler)
 
-app.get('/spotify-refresh-token', spotifyRefreshTokenHandler)
+app.post('/spotify-refresh-token', spotifyRefreshTokenHandler)
 
 app.post('/create-playlist', createPlaylistHandler)
 

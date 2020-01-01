@@ -1,5 +1,7 @@
 const { knex } = require('../knex')
 const bcrypt = require('bcrypt')
+const request = require('request')
+const { passport } = require('../passport')
 
 function validateEmail(email) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -55,7 +57,7 @@ function addUser(email, password) {
           password: encryptedPassword
         })
         .then(function() {
-          resolve('success')
+          resolve()
         })
         .catch(function(err) {
           reject(err)
@@ -63,7 +65,7 @@ function addUser(email, password) {
     })
 }
 
-const signUpHandler = async function(req, res) {
+const signUpHandler = async function(req, res, next) {
     var email = req.body.email
     var password = req.body.password
     var errs = []
@@ -76,28 +78,78 @@ const signUpHandler = async function(req, res) {
         serverErr = err
       })
     if (serverErr !== '') {
-        console.log(serverErr)
-      res.status(500).json({
+      return res.status(500).json({
         err: serverErr
       })
-      return
     }
     if (userExists === true) {
-      errs.push('Users exist')
+      errs.push('User exists')
     }
     if (!validatePassword(password)) {
       errs.push('Invalid password')
     }
     if (errs.length !== 0) {
-      res.status(400).json({
+      return res.status(400).json({
         err: errs
       })
-      return
     } else {
       addUser(email, password)
         .then(function() {
-          req.logIn(email, function(){})
-          res.status(200).send()
+          return passport.authenticate('local', { failureFlash: true}, function(err, user, info) {
+            if (err) { 
+              return res.status(500).json({ err: JSON.stringify(err) }) 
+            }
+            if (!user) { 
+              return res.status(401).json({
+                err: info
+              }) 
+            } else {
+              return req.logIn(user, function(err) {
+                if (err) { 
+                  return res.status(500).send({ err: JSON.stringify(err) })
+                } else {
+                  return res.status(200).send()
+                }
+              })
+            }
+          })(req, res, next)
+          // passport.authenticate('local')(req, res, function (err) {
+          //   console.log(err)
+          //   return res.status(200).json()
+          // })
+          // res.status(200).send()
+
+          // req.logIn(email, function(err){
+          //   if (err) {
+          //     console.log(err)
+          //   } else {
+          //     console.log(req.user)
+          //     res.status(200).send()
+          //   }
+          // })
+
+          // var options = {
+          //   url: `${req.protocol}://${req.get('host')}/login`,
+          //   body: {
+          //       email,
+          //       password
+          //   },
+          //   json: true
+          // }
+          // request.post(options, function(error, response, body) {
+          //   if (!error && response.statusCode === 200) { 
+          //     return res.status(200).send()
+          //   } else {
+          //     if (error) {
+          //       console.log(error)
+          //       res.status(500).send()
+          //     }
+          //     return res.status(response.statusCode).json({
+          //       body: response.body,
+          //       err: error
+          //     })
+          //   }
+          // })
         })
         .catch(function(err) {
           serverErr = err

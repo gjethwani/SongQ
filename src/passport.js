@@ -42,6 +42,9 @@ passport.deserializeUser(function(id, done) {
     knex('Users')
         .where({ email: id})
         .then(function(rows) {
+            if (rows.length === 0) {
+              return done('no user', null)
+            }
             return done(null, rows[0].email)
         })
         .catch(function(err) {
