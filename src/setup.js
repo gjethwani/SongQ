@@ -34,6 +34,9 @@ var sessionOptions = {
   resave: true,
   saveUninitialized: true,
   store: new SQLiteStore,
+  cookie: {
+    httpOnly: false
+  }
 }
 
 app.use(cookieParser(sessionOptions.secret)); // read cookies (needed for auth)
