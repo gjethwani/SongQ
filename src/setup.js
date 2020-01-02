@@ -31,7 +31,7 @@ var SQLiteStore = require('connect-sqlite3')(session);
 var sessionOptions = {
   secret: process.env.SESSION_SECRET,
   rolling: true, // https://stackoverflow.com/questions/20387554/how-to-keep-alive-an-nodejs-passport-session
-  resave: false,
+  resave: true,
   saveUninitialized: true,
   store: new SQLiteStore,
 }
