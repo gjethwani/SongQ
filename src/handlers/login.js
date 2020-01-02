@@ -14,8 +14,7 @@ const logInHandler = function(req, res, next) {
           if (err) { 
             return res.status(500).send({ err: JSON.stringify(err) })
           } else {
-            return res.status(200).send()
-            // return res.redirect(`/authenticate-spotify?justSignedUp=false`)
+            return res.redirect(`/authenticate-spotify?justSignedUp=false`)
           }
         })
       }

@@ -16,6 +16,9 @@ const { getRequestsHandler } = require('./handlers/get-requests')
 const { serviceRequestHandler } = require('./handlers/service-request')
 const { getExistingPlaylistsHandler } = require('./handlers/get-existing-playlists')
 const { getNearbyPlaylistsHandler } = require('./handlers/get-nearby-playlists')
+const { updateSpotifyDetailsHandler } = require('./handlers/update-spotify-details')
+const { getRefreshTokenHandler } = require('./handlers/get-refresh-token')
+const { spotifyRefreshUpdateHandler } = require('./handlers/spotify-refresh-update')
 
 app.post('/sign-up', signUpHandler)
 
@@ -23,13 +26,13 @@ app.post('/login', logInHandler)
 
 app.post('/is-logged-in', isLoggedInHandler)
 
-app.post('/spotify-login', spotifyLogInHandler)
+// app.post('/spotify-login', spotifyLogInHandler)
 
-app.get('/spotify-redirect', spotifyRedirectHandler)
+// app.get('/spotify-redirect', spotifyRedirectHandler)
 
 app.get('/authenticate-spotify', authenticateSpotifyHandler)
 
-app.post('/spotify-refresh-token', spotifyRefreshTokenHandler)
+// app.post('/spotify-refresh-token', spotifyRefreshTokenHandler)
 
 app.post('/create-playlist', createPlaylistHandler)
 
@@ -50,6 +53,12 @@ app.post('/service-request', serviceRequestHandler)
 app.post('/get-existing-playlists', getExistingPlaylistsHandler)
 
 app.get('/get-nearby-playlists', getNearbyPlaylistsHandler)
+
+app.post('/update-spotify-details', updateSpotifyDetailsHandler)
+
+app.post('/get-refresh-token', getRefreshTokenHandler)
+
+app.post('/spotify-refresh-update', spotifyRefreshUpdateHandler)
 
 app.get('/api-docs', swaggerUi.setup(swaggerDocument))
 

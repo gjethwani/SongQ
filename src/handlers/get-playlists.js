@@ -6,6 +6,9 @@ const request = require('request')
 function getAlbumArt(playlists, token) {
     return new Promise(function(resolve, reject) {
         const noCalls = playlists.length
+        if (noCalls === 0) {
+            resolve(playlists)
+        }
         let callsMade = 0
         let newPlaylists = playlists
         for (let i = 0; i < noCalls; i++) {
@@ -22,8 +25,13 @@ function getAlbumArt(playlists, token) {
                         newPlaylists[i].image = body
                     }
                 } else {
-                    console.log(response.statusCode)
-                    console.log(error)
+                    if (error) {
+                        console.log(error)
+                        reject(error)
+                    } else {
+                        console.log(response.statusCode)
+                        reject(response.statusCode)
+                    }
                 }
                 callsMade++
                 if (callsMade === noCalls) {
@@ -46,16 +54,20 @@ const getPlaylistsHandler = function(req, res) {
                     .then(function(userObj) {
                         getAlbumArt(rows, userObj.accessToken)
                             .then(function(playlists) {
-                                res.status(200).json({
+                                return res.status(200).json({
                                     playlists
                                 })
+                            })
+                            .catch(function(err) {
+                                console.log(err)
+                                return res.status(500).json(err)
                             })
                         
                     })
             })
             .catch(function(err) {
                 console.log(err)
-                res.status(500).json({ err: JSON.stringify(err) })
+                return res.status(500).json({ err: JSON.stringify(err) })
             })
     }
 }
