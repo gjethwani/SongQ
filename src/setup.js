@@ -32,9 +32,9 @@ var sessionOptions = {
   resave: true,
   saveUninitialized: true,
   store: new SQLiteStore,
+  proxy: true,
   cookie: {
-    httpOnly: false, 
-    secure: true
+    httpOnly: false
   }
 }
 
