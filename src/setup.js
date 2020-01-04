@@ -16,8 +16,6 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('../swagger.json');
 const app = express()
 
-const port = process.env.PORT || 5000;
-
 app.use('/api-docs', swaggerUi.serve)
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json({limit: '50mb'}))
@@ -35,7 +33,8 @@ var sessionOptions = {
   saveUninitialized: true,
   store: new SQLiteStore,
   cookie: {
-    httpOnly: false
+    httpOnly: false, 
+    secure: true
   }
 }
 
