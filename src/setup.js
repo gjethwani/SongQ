@@ -39,6 +39,13 @@ var sessionOptions = {
   }
 }
 
+app.use([(req, res, next) => {
+  if (req.headers['cloudfront-forwarded-proto']) {
+    req.headers['x-forwarded-proto'] = req.headers['cloudfront-forwarded-proto'];
+  }
+  next();
+}])
+
 app.use(cookieParser(sessionOptions.secret)); // read cookies (needed for auth)
 app.use(session(sessionOptions));
 
