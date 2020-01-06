@@ -26,25 +26,27 @@ app.use(compression({level: 9}))
 
 var SQLiteStore = require('connect-sqlite3')(session);
 
-app.set('trust proxy', 1)
+// app.set('trust proxy', 1)
 var sessionOptions = {
   secret: process.env.SESSION_SECRET,
   rolling: true, // https://stackoverflow.com/questions/20387554/how-to-keep-alive-an-nodejs-passport-session
   resave: true,
   saveUninitialized: true,
   store: new SQLiteStore,
-  proxy: true,
+  // proxy: true,
   cookie: {
     httpOnly: false
   }
 }
 
-app.use([(req, res, next) => {
-  if (req.headers['cloudfront-forwarded-proto']) {
-    req.headers['x-forwarded-proto'] = req.headers['cloudfront-forwarded-proto'];
+app.all(/.*/, function(req, res, next) {
+  var host = req.header("host");
+  if (host.match(/^www\..*/i)) {
+    next();
+  } else {
+    res.redirect(301, "http://www." + host);
   }
-  next();
-}])
+});
 
 app.use(cookieParser(sessionOptions.secret)); // read cookies (needed for auth)
 app.use(session(sessionOptions));
