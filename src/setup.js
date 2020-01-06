@@ -39,15 +39,6 @@ var sessionOptions = {
   }
 }
 
-app.all(/.*/, function(req, res, next) {
-  var host = req.header("host");
-  if (host.match(/^www\..*/i)) {
-    next();
-  } else {
-    res.redirect(301, "http://www." + host);
-  }
-});
-
 app.use(cookieParser(sessionOptions.secret)); // read cookies (needed for auth)
 app.use(session(sessionOptions));
 
