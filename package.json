@@ -19,7 +19,7 @@
   "homepage": "https://github.com/gjethwani/SongQ#readme",
   "dependencies": {
     "assert": "^2.0.0",
-    "bcrypt": "^3.0.6",
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "bookshelf": "^0.14.2",
     "compression": "^1.7.4",
