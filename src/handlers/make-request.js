@@ -1,32 +1,23 @@
-const { isClientCredentialsTokenValid } = require('../util')
-const { knex } = require('../knex')
-
-function makeRequest(requestData) {
-    return new Promise(function(resolve, reject) {
-        knex("Requests")
-            .insert(requestData)
-            .then(function() {
-                resolve()
-            })
-            .catch(function(err) {
-                console.log(err)
-                reject(err)
-            })
-    })
-}
+const RequestModel = require('../models/request')
+const PlaylistModel = require('../models/playlist')
 
 const makeRequestHandler = function(req, res) {
-    var { ccTokenInfo } = req.session
-    if (!isClientCredentialsTokenValid(ccTokenInfo)) {
-        res.status(401).send()
-    } else {
-        const { roomCode, songId, songName, artists, album, albumArt } = req.body
-        if (!roomCode || !songId) {
-            req.status(400).send()
-            return
+    const { playlistId, songId, songName, artists, album, albumArt } = req.body
+    if (!playlistId || !songId) {
+        return res.status(400).send()
+    }
+    PlaylistModel.findById(playlistId, (err, playlist) => {
+        if (err) {
+            return res.status(500).json({ err: JSON.stringify(err) })
         }
-        var requestData = {
-            roomCode,
+        if (!playlist) {
+            return res.status(404).send()
+        }
+        if (!playlist.activated) {
+            return res.status(403).json({ err: 'playlist not activated'})
+        }
+        const requestData = {
+            playlistId,
             songId,
             songName,
             artists,
@@ -34,15 +25,15 @@ const makeRequestHandler = function(req, res) {
             albumArt,
             serviced: false
         }
-        makeRequest(requestData)
-            .then(function() {
-                res.status(200).send()
+        const request = new RequestModel(requestData)
+        request.save()
+            .then(() => {
+                return res.status(200).send()
             })
-            .catch(function(err) {
-                console.log(err)
-                res.status(500).json({ err: JSON.stringify(err) })
+            .catch(err => {
+                return res.status(500).json({ err: JSON.stringify(err) })
             })
-    }
+    })
 }
 
 module.exports = {

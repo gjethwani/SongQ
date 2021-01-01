@@ -1,5 +1,6 @@
 const request = require('request')
-const { getCurrentUnixTimeStamp, updateSpotifyDetails } = require('../util')
+const { getCurrentUnixTimeStamp } = require('../util')
+const UserModel = require('../models/user')
 
 function getSpotifyId(accessToken) {
   var options = {
@@ -27,9 +28,6 @@ function getSpotifyId(accessToken) {
 }
 
 const spotifyRedirectHandler = function(req, res) {
-    if (!req.user) {
-      res.status(401).send()
-    } else {
       var code = req.query.code
       var authOptions = {
         url: 'https://accounts.spotify.com/api/token',
@@ -39,46 +37,52 @@ const spotifyRedirectHandler = function(req, res) {
           grant_type: 'authorization_code'
         },
         headers: {
-          'Authorization': 'Basic ' + (new Buffer(process.env.SPOTIFY_CLIENT_ID + ':' + process.env.SPOTIFY_CLIENT_SECRET).toString('base64'))
+          'Authorization': 'Basic ' + (new Buffer.from(process.env.SPOTIFY_CLIENT_ID + ':' + process.env.SPOTIFY_CLIENT_SECRET).toString('base64'))
         },
         json: true
       }
       request.post(authOptions, async function(error, response, body) {
         if (!error && response.statusCode === 200) {
   
-          var accessToken = body.access_token,
+          const accessToken = body.access_token,
               refreshToken = body.refresh_token,
               expiresIn = body.expires_in
-  
-          var expiresAt = getCurrentUnixTimeStamp() + expiresIn
-          var spotifyId = await getSpotifyId(accessToken)
-            .catch(function(err) {
-              res.status(500).json({ err: JSON.stringify(err) })
+          const expiresAt = getCurrentUnixTimeStamp() + expiresIn
+          try {
+            const userId = await getSpotifyId(accessToken)
+            req.session.userId = userId
+            req.session.accessToken = accessToken
+            req.session.refreshToken = refreshToken
+            req.session.expiresAt = expiresAt
+            UserModel.findOne({ userId }, async (err, user) => {
+              if (err) {
+                return res.status(500).json({ err: JSON.stringify(err) })
+              }
+              if (!user) {
+                const newUser = new UserModel({
+                  userId
+                })
+                try {
+                  await newUser.save()
+                } catch(err) {
+                  return res.status(500).json({ err: JSON.stringify(err) })
+                }
+              } else {
+                return res.status(200).send()
+              }
             })
-          updateSpotifyDetails(req.user, { //TODO: handle same spotify id
-            accessToken,
-            refreshToken,
-            expiresAt,
-            spotifyId
-          })
-            .then(function() {
-              // res.status(200).send()
-              res.redirect(`${process.env.FRONT_END_URI}/home`)
-            })
-            .catch(function(err) {
-              console.log(err)
-              res.status(500).json({ err: JSON.stringify(err) })
-            })
+          } catch (err) {
+            return res.status(500).json({ err: JSON.stringify(err )})
+          }
         } else {
           if (error) {
-            res.status(500).json({ err: error })
+            return res.status(500).json({ err: JSON.stringify(error) })
           }
-          if (response.statusCode !== 200) {
-            res.status(response.status).send()
+          if (response.statusCode >= 300) {
+            return res.status(response.statusCode).send()
           }
         }
       })
-    }
 }
 
 module.exports = {

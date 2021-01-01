@@ -1,74 +1,56 @@
-const request = require('request')
-const { getUser } = require('../util')
-const { knex } = require('../knex')
+const requestModule = require('request')
+const RequestModel = require('../models/request')
 
-function serviceRequest(requestId, accepted) {
-    return new Promise(function(resolve, reject) {
-        knex('Requests')
-            .where({ id: requestId})
-            .update({ accepted, serviced: true})
-            .then(function() {
-                resolve()
-            })
-            .catch(function(err) {
-                reject(err)
-            })
-    })
-}
-
-const serviceRequestHandler = function(req, res) {
-    if (!req.user) {
-        res.status(401).send()
-    } else {
-        var { requestId, songId, playlistId, accepted } = req.body 
-        if (!requestId || !songId || !playlistId || accepted === undefined) {
-            res.status(400).send()
-        }
-        getUser(req.user)
-            .then(function(user) {
-                var options = {
-                    url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-                    headers: {
-                        'Authorization': `Bearer ${user.accessToken}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: {
-                        uris: [`spotify:track:${songId}`]
-                    },
-                    json: true
-                }
-                if (accepted) {
-                    request.post(options, function(error, response, body) {
-                        if (!error && response.statusCode === 201) {
-                            serviceRequest(requestId, accepted)
-                                .then(function() {
-                                    res.status(200).send()
-                                })
-                                .catch(function(err) {
-                                    res.status(500).json({ err: JSON.stringify(err) })
-                                })
-                        } else {
-                            res.status(response.statusCode).json({
-                                body: response.body,
-                                err: error
-                            })
-                        }
-                    })
-                } else {
-                    serviceRequest(requestId, accepted)
-                        .then(function() {
-                            res.status(200).send()
-                        })
-                        .catch(function(err) {
-                            res.status(500).json({ err: JSON.stringify(err) })
-                        })
-                }
-                
-            })
-            .catch(function(err) {
-                res.status(500).json({ err: JSON.stringify(err) })
-            })
+const serviceRequestHandler = (req, res) => {
+    let { requestId, accepted } = req.body 
+    if (!requestId || !accepted) {
+        return res.status(400).send()
     }
+    accepted = JSON.parse(accepted)
+    RequestModel.findById(requestId, async (err, request) => {
+        if (err) {
+            return res.status(500).json({ err: JSON.stringify(err) })
+        }
+        if (!request) {
+            return res.status(404).json({ err: 'no request found'})
+        }
+        if (!accepted) {
+            try {
+                request.serviced = true
+                request.accepted = false
+                await request.save()
+                return res.status(200).send()
+            } catch(err) {
+                return res.status(500).json({ err: JSON.stringify(err) })
+            }
+        } else {
+            const options = {
+                url: `https://api.spotify.com/v1/me/player/queue?uri=spotify:track:${request.songId}`,
+                headers: {
+                    'Authorization': `Bearer ${req.session.accessToken}` 
+                },
+                json: true
+            }
+            requestModule.post(options, async (error, response, body) => {
+                if (!error && response.statusCode >= 200 && response.statusCode < 300) {
+                    try {
+                        request.serviced = true
+                        request.accepted = true
+                        await request.save()
+                        return res.status(200).send()
+                    } catch (err) {
+                        return res.status(500).json({ err: JSON.stringify(err) })
+                    }
+                } else {
+                    if (error) {
+                        return res.status(500).json({ err: JSON.stringify(error) })
+                    } else {
+                        return res.status(response.statusCode).send()
+                    }
+                }
+            })
+        }
+    })
 }
 
 module.exports = {

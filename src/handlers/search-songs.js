@@ -2,33 +2,29 @@ const { isClientCredentialsTokenValid } = require('../util')
 const request = require('request')
 
 const searchSongsHandler = function(req, res) {
-    var { ccTokenInfo } = req.session
-    if (!isClientCredentialsTokenValid(ccTokenInfo)) {
-        res.status(401).send()
-    } else {
-        var { q } = req.body
-        var { token } = ccTokenInfo
-        var type = "track"
-        var options = {
-            url: `https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=${type}&limit=50`,
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            json: true
-        }
-        request.get(options, function(error, response, body) {
-            if (!error && response.statusCode == 200) {
-                res.status(200).json({
-                    results: body
-                })
-            } else {
-                res.status(response.statusCode).json({
-                    body: response.body,
-                    err: error
-                })
-            }
-        })
+    const { ccTokenInfo } = req.session
+    const { q } = req.body
+    const { token } = ccTokenInfo
+    const type = "track"
+    const options = {
+        url: `https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=${type}&limit=50`,
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+        json: true
     }
+    request.get(options, (error, response, body) => {
+        if (!error && response.statusCode >= 200 && response.statusCode < 300) {
+            return res.status(200).json({
+                results: body
+            })
+        } else {
+            if (err) {
+                return res.status(500).json({ err: JSON.stringify(err) })
+            }
+            return res.status(response.statusCode).send()
+        }
+    })
 }
 
 module.exports = {

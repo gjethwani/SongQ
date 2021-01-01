@@ -1,29 +1,29 @@
 const request = require('request')
 const { getCurrentUnixTimeStamp } = require('../util')
 
-const guestLoginHandler = function(req, res) {
-    var authOptions = {
+const guestLoginHandler = (req, res) => {
+    const authOptions = {
         url: 'https://accounts.spotify.com/api/token',
         headers: {
-            'Authorization': 'Basic ' + (new Buffer(process.env.SPOTIFY_CLIENT_ID + ':' + process.env.SPOTIFY_CLIENT_SECRET).toString('base64'))
+            'Authorization': 'Basic ' + (new Buffer.from(process.env.SPOTIFY_CLIENT_ID + ':' + process.env.SPOTIFY_CLIENT_SECRET).toString('base64'))
         },
         form: {
             grant_type: 'client_credentials'
         },
         json: true
     }
-    request.post(authOptions, function(error, response, body) {
-        if (!error && response.statusCode === 200) {
+    request.post(authOptions, (error, response, body) => {
+        if (!error && response.statusCode >= 200 && response.statusCode < 300) {
             req.session.ccTokenInfo = {
                 token: body.access_token,
                 expiresAt: getCurrentUnixTimeStamp() + body.expires_in
             }
-            res.status(200).send()
+            return res.status(200).send()
         } else {
-            res.status(response.statusCode).json({
-                body: response.body,
-                err: error
-            })
+            if (err) {
+                return res.status(500).json({ err: JSON.stringify(err) })
+            }
+            return res.status(response.statusCode).json()
         }
     })
 }
