@@ -10,6 +10,7 @@ const { spotifyLogInHandler } = require('./handlers/spotify-login')
 const { spotifyRedirectHandler } = require('./handlers/spotify-redirect')
 const { authenticateAuthorizationFlow } = require('./middleware/authenticate-authorization-flow')
 const { authenticateClientCredentialsFlow } = require('./middleware/authenticate-client-credentials-flow')
+const { getUserDetailsHandler } = require('./handlers/get-user-details')
 
 app.patch('/change-queue-activation', authenticateAuthorizationFlow, changeQueueActivationHandler)
 
@@ -28,6 +29,8 @@ app.post('/service-request', authenticateAuthorizationFlow, serviceRequestHandle
 app.get('/spotify-login', spotifyLogInHandler)
 
 app.get('/spotify-redirect', spotifyRedirectHandler)
+
+app.get('/get-user-details', authenticateAuthorizationFlow, getUserDetailsHandler)
 
 app.get('/api-docs', swaggerUi.setup(swaggerDocument))
 

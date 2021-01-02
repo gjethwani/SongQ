@@ -36,12 +36,13 @@ const generateCode = () => {
 
 const changeQueueActivationHandler = (req, res) => {
     let { userId, activated } = req.body
-    activated = JSON.parse(activated)
     if (!userId || activated === undefined) {
         return res.status(400).send()
     }
-    UserModel.findById(userId, async (err, user) => {
+    activated = JSON.parse(activated)
+    UserModel.findOne({ userId }, async (err, user) => {
         if (err) {
+            console.log(err)
             return res.status(500).json({ err: JSON.stringify(err) })
         }
         if (!user) {

@@ -16,6 +16,15 @@ app.use('/api-docs', swaggerUi.serve)
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json({limit: '50mb'}))
 
+const cors = require('cors')
+
+const corsOptions = {
+  origin: [process.env.FRONTEND_URL],
+  credentials: true
+}
+
+app.use(cors(corsOptions))
+
 const store = new MongoDBStore({
   uri: process.env.MONGODB_URI,
   collection: 'sessions'
@@ -30,6 +39,7 @@ const sessionOptions = {
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
+  cookie: { maxAge: 3600000 ,secure: false, httpOnly: true }
 }
 
 const mongoose = require('mongoose')

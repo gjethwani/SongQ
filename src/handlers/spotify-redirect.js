@@ -69,7 +69,8 @@ const spotifyRedirectHandler = function(req, res) {
                   return res.status(500).json({ err: JSON.stringify(err) })
                 }
               } else {
-                return res.status(200).send()
+                // return res.status(200).send()
+                return res.redirect(`${process.env.FRONTEND_URL}/home`)
               }
             })
           } catch (err) {
