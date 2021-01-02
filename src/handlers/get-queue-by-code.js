@@ -1,22 +1,22 @@
-const PlaylistModel = require('../models/playlist')
+const UserModel = require('../models/user')
 
-const getPlaylistByCodeHandler = (req, res) => {
+const getQueueByCodeHandler = (req, res) => {
     let { code } = req.query
     if (!code) {
         return res.status(400).send()
     }
     code = decodeURIComponent(code)
-    PlaylistModel.findOne({ code }, (err, playlist) => {
+    UserModel.findOne({ code }, (err, user) => {
         if (err) {
             return res.status(500).json({ err: JSON.stringify(err) })
         }
-        if (!playlist) {
+        if (!user) {
             return res.status(404).send()
         }
-        return res.status(200).json({ playlist })
+        return res.status(200).json({ userId: user.userId })
     })
 }
 
 module.exports = {
-    getPlaylistByCodeHandler
+    getQueueByCodeHandler
 }

@@ -1,7 +1,6 @@
-const { isClientCredentialsTokenValid } = require('../util')
 const request = require('request')
 
-const searchSongsHandler = function(req, res) {
+const searchSongsHandler = (req, res) => {
     const { ccTokenInfo } = req.session
     const { q } = req.body
     const { token } = ccTokenInfo

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const RequestSchema = new mongoose.Schema({
-    playlistId: {
+    userId: {
         type: String,
         required: [true, "playlist is required"],
 

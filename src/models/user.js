@@ -5,8 +5,14 @@ const UserSchema = new mongoose.Schema({
         type: String
     },
     email: {
-        type: String,
+        type: String
     },
+    queueActivated: {
+        type: Boolean
+    },
+    code: {
+        type: String
+    }
 }, { 
     timestamps: { 
         createdAt: 'createdAt',

@@ -2,7 +2,7 @@ const request = require('request')
 const { getCurrentUnixTimeStamp } = require('../util')
 const UserModel = require('../models/user')
 
-function getSpotifyId(accessToken) {
+const getSpotifyId = (accessToken) => {
   var options = {
     url: 'https://api.spotify.com/v1/me',
     headers: {
@@ -60,7 +60,8 @@ const spotifyRedirectHandler = function(req, res) {
               }
               if (!user) {
                 const newUser = new UserModel({
-                  userId
+                  userId,
+                  queueActivated: false
                 })
                 try {
                   await newUser.save()

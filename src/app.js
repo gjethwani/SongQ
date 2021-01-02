@@ -1,8 +1,6 @@
 const { app, swaggerUi, swaggerDocument } = require('./setup')
-const { changePlaylistActivationHandler } = require('./handlers/change-playlist-activation')
-const { createPlaylistHandler } = require('./handlers/create-playlist')
-const { getPlaylistByCodeHandler } = require('./handlers/get-playlist-by-code')
-const { getPlaylistsHandler } = require('./handlers/get-playlists')
+const { changeQueueActivationHandler } = require('./handlers/change-queue-activation')
+const { getQueueByCodeHandler } = require('./handlers/get-queue-by-code')
 const { getRequestsHandler } = require('./handlers/get-requests')
 const { guestLoginHandler } = require('./handlers/guest-login')
 const { makeRequestHandler } = require('./handlers/make-request')
@@ -13,13 +11,9 @@ const { spotifyRedirectHandler } = require('./handlers/spotify-redirect')
 const { authenticateAuthorizationFlow } = require('./middleware/authenticate-authorization-flow')
 const { authenticateClientCredentialsFlow } = require('./middleware/authenticate-client-credentials-flow')
 
-app.patch('/change-playlist-activation', authenticateAuthorizationFlow, changePlaylistActivationHandler)
+app.patch('/change-queue-activation', authenticateAuthorizationFlow, changeQueueActivationHandler)
 
-app.post('/create-playlist', authenticateAuthorizationFlow, createPlaylistHandler)
-
-app.get('/get-playlist-by-code', getPlaylistByCodeHandler)
-
-app.get('/get-playlists', authenticateAuthorizationFlow, getPlaylistsHandler)
+app.get('/get-queue-by-code', getQueueByCodeHandler)
 
 app.get('/get-requests', authenticateAuthorizationFlow, getRequestsHandler)
 
