@@ -44,10 +44,13 @@ const cookie = process.env.ENV === 'local' ? {
   domain: 'songq-ui.herokuapp.com'
 }
 
+app.enable('trust proxy')
+
 const sessionOptions = {
   store,
   secret: process.env.SESSION_SECRET,
   resave: false,
+  proxy: true,
   saveUninitialized: false,
   cookie
 }
