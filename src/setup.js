@@ -38,7 +38,7 @@ const sessionOptions = {
   store,
   secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: { maxAge: 3600000 ,secure: false, httpOnly: true }
 }
 
