@@ -40,17 +40,21 @@ const cookie = process.env.ENV === 'local' ? {
   httpOnly: true 
 } : {
   maxAge: 3600000,
-  secure: true,
-  domain: 'songq-ui.herokuapp.com'
+  // secure: true,
+  secure: false,
+  httpOnly: true,
+  // domain: 'songq.io'
 }
 
-app.enable('trust proxy')
+console.log(cookie)
+
+// app.enable('trust proxy')
 
 const sessionOptions = {
   store,
   secret: process.env.SESSION_SECRET,
   resave: false,
-  proxy: true,
+  // proxy: true,
   saveUninitialized: false,
   cookie
 }
