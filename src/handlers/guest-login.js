@@ -20,7 +20,7 @@ const guestLoginHandler = (req, res) => {
             }
             return res.status(200).send()
         } else {
-            if (err) {
+            if (error) {
                 return res.status(500).json({ err: JSON.stringify(err) })
             }
             return res.status(response.statusCode).json()

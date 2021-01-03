@@ -3,7 +3,7 @@ const RequestModel = require('../models/request')
 
 const serviceRequestHandler = (req, res) => {
     let { requestId, accepted } = req.body 
-    if (!requestId || !accepted) {
+    if (!requestId || accepted === undefined) {
         return res.status(400).send()
     }
     accepted = JSON.parse(accepted)
@@ -45,6 +45,9 @@ const serviceRequestHandler = (req, res) => {
                     if (error) {
                         return res.status(500).json({ err: JSON.stringify(error) })
                     } else {
+                        if (response.statusCode === 404) {
+                            return res.status(404).json({ err: 'no queue'})
+                        }
                         return res.status(response.statusCode).send()
                     }
                 }
