@@ -2,7 +2,6 @@ const UserModel = require('../models/user')
 const RequestModel = require('../models/request')
 
 const getUserDetailsHandler = (req, res) => {
-    console.log(req.sessionID)
     const { userId } = req.session
     UserModel.findOne({ userId }, async (err, user) => {
         if (err) {

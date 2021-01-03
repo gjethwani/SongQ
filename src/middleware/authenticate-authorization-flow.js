@@ -2,6 +2,7 @@ const { getCurrentUnixTimeStamp } = require('../util')
 const request = require('request')
 
 const authenticateAuthorizationFlow = (req, res, next) => {
+    console.log(req.sessionID)
     if (!req.session.userId) {
         return res.status(401).json({ err: 'user not signed in'})
     }
