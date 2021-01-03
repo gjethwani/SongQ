@@ -55,7 +55,6 @@ const spotifyRedirectHandler = function(req, res) {
             req.session.accessToken = accessToken
             req.session.refreshToken = refreshToken
             req.session.expiresAt = expiresAt
-            req.session.save()
             UserModel.findOne({ userId }, async (err, user) => {
               if (err) {
                 return res.status(500).json({ err: JSON.stringify(err) })

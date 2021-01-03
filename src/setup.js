@@ -34,12 +34,21 @@ store.on('error', function(error) {
   console.log(error);
 })
 
+const cookie = process.env.ENV === 'local' ? {
+  maxAge: 3600000,
+  secure: false, 
+  httpOnly: true 
+} : {
+  maxAge: 3600000,
+  secure: true, 
+}
+
 const sessionOptions = {
   store,
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 3600000 ,secure: false, httpOnly: true }
+  cookie
 }
 
 const mongoose = require('mongoose')
