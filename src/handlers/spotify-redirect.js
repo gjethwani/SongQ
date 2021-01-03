@@ -28,6 +28,7 @@ const getSpotifyId = (accessToken) => {
 }
 
 const spotifyRedirectHandler = function(req, res) {
+      console.log(req.sessionID)
       var code = req.query.code
       var authOptions = {
         url: 'https://accounts.spotify.com/api/token',
