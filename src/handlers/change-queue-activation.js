@@ -3,7 +3,7 @@ const fs = require('fs')
 
 const isCodeUnique = (code) => {
     return new Promise((resolve, reject) => {
-        UserModel.findOne({ code }, (err, user) => {
+        UserModel.findOne({ code, queueActivated: true }, (err, user) => {
             if (err) {
                 reject()
             } else {
