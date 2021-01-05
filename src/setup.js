@@ -67,7 +67,9 @@ app.use(session(sessionOptions));
 
 if (process.env.ENV !== 'local') {
   app.use((req, res) => {
-    res.redirect(`https://${req.header('host')}${req.url}`)
+    if (req.protocol !== 'https') {
+      res.redirect(`https://${req.header('host')}${req.url}`)
+    }
   })
 }
 
