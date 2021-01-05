@@ -65,14 +65,6 @@ try {
 app.use(cookieParser(sessionOptions.secret)); // read cookies (needed for auth)
 app.use(session(sessionOptions));
 
-if (process.env.ENV !== 'local') {
-  app.use((req, res) => {
-    if (req.protocol !== 'https') {
-      res.redirect(`https://${req.header('host')}${req.url}`)
-    }
-  })
-}
-
 module.exports = {
     app,
     swaggerUi,
