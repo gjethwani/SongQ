@@ -65,7 +65,6 @@ const createPlaylistHandler = async function(req, res) {
         playlistId,
     } = req.body
     const useExistingPlaylist = JSON.parse(req.body.useExistingPlaylist)
-    console.log(playlistName, playlistIsPublic, req.body.useExistingPlaylist)
     const playlistData = { playlistName }
     playlistData.owner = req.session.userId
     if (!playlistName || playlistIsPublic === undefined || useExistingPlaylist === undefined) {

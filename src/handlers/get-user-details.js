@@ -10,10 +10,11 @@ const getUserDetailsHandler = (req, res) => {
         if (!user) {
             return res.status(404).send()
         }
-        const { code, queueActivated } = user
+        const { code, name, queueActivated } = user
         const userObj = {
             userId,
             code,
+            name,
             queueActivated,
             requests: []
         }

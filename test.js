@@ -14,7 +14,6 @@ const getWord = (path) => {
 const generateCode = () => {
     const adjective = getWord('words/adjectives.txt')
     const noun = getWord('words/nouns.txt')
-    console.log(adjective, noun)
 }
 
 generateCode()

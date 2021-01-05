@@ -43,18 +43,12 @@ const cookie = process.env.ENV === 'local' ? {
   // secure: true,
   secure: false,
   httpOnly: true,
-  // domain: 'songq.io'
 }
-
-console.log(cookie)
-
-// app.enable('trust proxy')
 
 const sessionOptions = {
   store,
   secret: process.env.SESSION_SECRET,
   resave: false,
-  // proxy: true,
   saveUninitialized: false,
   cookie
 }
