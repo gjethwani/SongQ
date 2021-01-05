@@ -66,11 +66,8 @@ app.use(cookieParser(sessionOptions.secret)); // read cookies (needed for auth)
 app.use(session(sessionOptions));
 
 if (process.env.ENV !== 'local') {
-  app.use((req, res, next) => {
-    if (!req.connection.encrypted)
-      res.redirect(`https://${req.header('host')}${req.url}`)
-    else
-      next()
+  app.use((req, res) => {
+    res.redirect(`https://${req.header('host')}${req.url}`)
   })
 }
 
