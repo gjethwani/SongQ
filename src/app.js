@@ -14,6 +14,7 @@ const { getUserDetailsHandler } = require('./handlers/get-user-details')
 const { getUserNameHandler } = require('./handlers/get-user-name')
 const { connectHandler } = require('./handlers/connect')
 const { canCreateWSConnectionHandler } = require('./handlers/can-create-ws-connection')
+const { isQueueActivatedHandler } = require('./handlers/is-queue-active')
 
 app.patch('/change-queue-activation', authenticateAuthorizationFlow, changeQueueActivationHandler)
 
@@ -38,6 +39,8 @@ app.get('/spotify-redirect', spotifyRedirectHandler)
 app.get('/get-user-details', authenticateAuthorizationFlow, getUserDetailsHandler)
 
 app.post('/can-create-ws-connection', authenticateAuthorizationFlow, canCreateWSConnectionHandler)
+
+app.post('/is-queue-active', isQueueActivatedHandler)
 
 app.ws('/connect', connectHandler)
 
