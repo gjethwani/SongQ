@@ -1,5 +1,7 @@
 const UserModel = require('../models/user')
 const RequestModel = require('../models/request')
+const WSConnectionModel = require('../models/ws-connection')
+const { expressWs } = require('../setup')
 
 const makeRequestHandler = (req, res) => {
     const { userId, songId, songName, artists, album, albumArt } = req.body
@@ -27,10 +29,27 @@ const makeRequestHandler = (req, res) => {
         }
         const request = new RequestModel(requestData)
         request.save()
-            .then(() => {
+            .then(doc => {
+                WSConnectionModel.findOne({ userId }, (err, connection) => {
+                    if (err) {
+                        console.log('err finding connection')
+                    } else if (connection) {
+                        let { clients } = expressWs.getWss()
+                        clients = Array.from(clients)
+                        for (let i = 0; i < clients.length; i++) {
+                            const client = clients[i]
+                            const connectionId = JSON.stringify(connection._id)
+                            if (client.id === connectionId.substring(1, connectionId.length - 1)) {
+                                client.send('new-request:' + JSON.stringify(doc))
+                                break
+                            }
+                        }
+                    }
+                })
                 return res.status(200).send()
             })
             .catch(err => {
+                console.log(err)
                 return res.status(500).json({ err: JSON.stringify(err) })
             })
     })

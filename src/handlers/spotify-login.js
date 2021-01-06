@@ -1,5 +1,5 @@
 const spotifyLogInHandler = (req, res) => {
-  const scopes = 'user-read-private user-read-email playlist-modify-public playlist-modify-private user-read-birthdate user-modify-playback-state'
+  const scopes = 'user-read-private user-read-email playlist-modify-public playlist-modify-private user-read-birthdate user-modify-playback-state user-read-currently-playing user-read-playback-state'
   return res.redirect('https://accounts.spotify.com/authorize' +
     '?response_type=code' +
     '&client_id=' + process.env.SPOTIFY_CLIENT_ID +

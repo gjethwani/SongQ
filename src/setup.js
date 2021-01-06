@@ -62,11 +62,16 @@ try {
     console.log(err)
     console.error('Database connection error')
 }
-app.use(cookieParser(sessionOptions.secret)); // read cookies (needed for auth)
-app.use(session(sessionOptions));
+app.use(cookieParser(sessionOptions.secret)) // read cookies (needed for auth)
+const sessionParser = session(sessionOptions)
+app.use(sessionParser)
+
+const expressWs = require('express-ws')(app)
 
 module.exports = {
     app,
     swaggerUi,
-    swaggerDocument
+    swaggerDocument,
+    expressWs,
+    sessionParser
 }
