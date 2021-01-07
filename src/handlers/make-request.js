@@ -2,6 +2,7 @@ const UserModel = require('../models/user')
 const RequestModel = require('../models/request')
 const WSConnectionModel = require('../models/ws-connection')
 const { expressWs } = require('../setup')
+const { addToQueue } = require('../util')
 
 const makeRequestHandler = (req, res) => {
     const { userId, songId, songName, artists, album, albumArt } = req.body
@@ -27,9 +28,26 @@ const makeRequestHandler = (req, res) => {
             albumArt,
             serviced: false
         }
+        if (user.autoAccept) {
+            requestData.serviced = true
+            requestData.accepted = true
+        }
         const request = new RequestModel(requestData)
         request.save()
             .then(doc => {
+                if (user.autoAccept) {
+                    addToQueue(songId, req.session.accessToken, () => {
+                        return {
+                            status: 200
+                        }
+                    })
+                        .then(() => {
+                            return res.status(200).send()
+                        })
+                        .catch(err => {
+                            return res.status(err.status).json({ err: err.message })
+                        })
+                }
                 WSConnectionModel.findOne({ userId }, (err, connection) => {
                     if (err) {
                         console.log('err finding connection')
@@ -40,13 +58,14 @@ const makeRequestHandler = (req, res) => {
                             const client = clients[i]
                             const connectionId = JSON.stringify(connection._id)
                             if (client.id === connectionId.substring(1, connectionId.length - 1)) {
-                                client.send('new-request:' + JSON.stringify(doc))
+                                client.send('aew-request:' + JSON.stringify(doc))
                                 break
                             }
                         }
                     }
                 })
                 return res.status(200).send()
+                
             })
             .catch(err => {
                 console.log(err)

@@ -12,10 +12,15 @@ const UserSchema = new mongoose.Schema({
         type: String
     },
     queueActivated: {
-        type: Boolean
+        type: Boolean,
+        required: [true, "queueActivated required"]
     },
     code: {
         type: String
+    },
+    autoAccept: {
+        type: Boolean,
+        required: [true, "autoAccept required"]
     }
 }, { 
     timestamps: { 

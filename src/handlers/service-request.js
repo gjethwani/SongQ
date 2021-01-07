@@ -1,5 +1,5 @@
-const requestModule = require('request')
 const RequestModel = require('../models/request')
+const { addToQueue } = require('../util')
 
 const serviceRequestHandler = (req, res) => {
     let { requestId, accepted } = req.body 
@@ -24,34 +24,27 @@ const serviceRequestHandler = (req, res) => {
                 return res.status(500).json({ err: JSON.stringify(err) })
             }
         } else {
-            const options = {
-                url: `https://api.spotify.com/v1/me/player/queue?uri=spotify:track:${request.songId}`,
-                headers: {
-                    'Authorization': `Bearer ${req.session.accessToken}` 
-                },
-                json: true
-            }
-            requestModule.post(options, async (error, response, body) => {
-                if (!error && response.statusCode >= 200 && response.statusCode < 300) {
-                    try {
-                        request.serviced = true
-                        request.accepted = true
-                        await request.save()
-                        return res.status(200).send()
-                    } catch (err) {
-                        return res.status(500).json({ err: JSON.stringify(err) })
+            addToQueue(request.songId, req.session.accessToken, async () => {
+                try {
+                    request.serviced = true
+                    request.accepted = true
+                    await request.save()
+                    return {
+                        status: 200
                     }
-                } else {
-                    if (error) {
-                        return res.status(500).json({ err: JSON.stringify(error) })
-                    } else {
-                        if (response.statusCode === 404) {
-                            return res.status(404).json({ err: 'no queue'})
-                        }
-                        return res.status(response.statusCode).send()
+                } catch (err) {
+                    return {
+                        status: 500,
+                        message: JSON.stringify(err)
                     }
                 }
             })
+                .then(() => {
+                    return res.status(200).send()
+                })
+                .catch(err => {
+                    return res.status(err.status).json({ err: err.message })
+                })
         }
     })
 }

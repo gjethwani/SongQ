@@ -80,7 +80,8 @@ const spotifyRedirectHandler = function(req, res) {
               userId,
               name,
               email,
-              queueActivated: false
+              queueActivated: false,
+              autoAccept: false
             })
           } else {
             newUser = checkProperties(
@@ -88,6 +89,12 @@ const spotifyRedirectHandler = function(req, res) {
               [userId, name, email],
               user
             )
+            if (newUser.queueActivated === undefined) {
+              newUser.queueActivated = false
+            }
+            if (newUser.autoAccept === undefined) {
+              newUser.autoAccept = false
+            }
           }
           try {
             await newUser.save()
