@@ -16,6 +16,7 @@ const { connectHandler } = require('./handlers/connect')
 const { canCreateWSConnectionHandler } = require('./handlers/can-create-ws-connection')
 const { isQueueActivatedHandler } = require('./handlers/is-queue-active')
 const { changeAutoAcceptHandler } = require('./handlers/change-auto-accept')
+const { serviceAllHandler } = require('./handlers/service-all')
 
 app.patch('/change-queue-activation', authenticateAuthorizationFlow, changeQueueActivationHandler)
 
@@ -44,6 +45,8 @@ app.post('/can-create-ws-connection', authenticateAuthorizationFlow, canCreateWS
 app.post('/is-queue-active', isQueueActivatedHandler)
 
 app.post('/change-auto-accept', authenticateAuthorizationFlow, changeAutoAcceptHandler)
+
+app.post('/service-all', serviceAllHandler)
 
 app.ws('/connect', connectHandler)
 
