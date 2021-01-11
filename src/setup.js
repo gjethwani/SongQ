@@ -68,10 +68,16 @@ app.use(sessionParser)
 
 const expressWs = require('express-ws')(app)
 
+const loggly = require('loggly')
+const logger = loggly.createClient({
+    token: process.env.LOGGLY_TOKEN,
+    subdomain: process.env.LOGGLY_SUBDOMAIN,
+})
+
 module.exports = {
     app,
     swaggerUi,
     swaggerDocument,
     expressWs,
-    sessionParser
+    logger
 }

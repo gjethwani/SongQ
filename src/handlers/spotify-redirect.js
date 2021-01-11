@@ -1,5 +1,5 @@
 const request = require('request')
-const { getCurrentUnixTimeStamp } = require('../util')
+const { getCurrentUnixTimeStamp, log } = require('../util')
 const UserModel = require('../models/user')
 
 const getSpotifyDetails = (accessToken) => {
@@ -13,9 +13,9 @@ const getSpotifyDetails = (accessToken) => {
   return new Promise(function(resolve, reject) {
     request.get(options, function(error, response, body) {
       if (error) {
-        reject({ err: error })
+        reject(error)
       } else if (response.statusCode !== 200) {
-        reject({ err: `${response.statusCode}`})
+        reject(`${response.statusCode}`)
       } else {
         if (body.error) {
           reject(body.error)
@@ -72,6 +72,7 @@ const spotifyRedirectHandler = function(req, res) {
         req.session.expiresAt = expiresAt
         UserModel.findOne({ userId }, async (err, user) => {
           if (err) {
+            log('/spotify-redirect', userId, `[mongoose-find-err] ${JSON.stringify(err)}`)
             return res.status(500).json({ err: JSON.stringify(err) })
           }
           let newUser
@@ -100,17 +101,21 @@ const spotifyRedirectHandler = function(req, res) {
             await newUser.save()
             return res.redirect(`${process.env.FRONTEND_URL}/home`)
           } catch(err) {
+            log('/spotify-redirect', userId, `[mongoose-save-err] ${JSON.stringify(err)}`)
             return res.status(500).json({ err: JSON.stringify(err) })
           }
         })
       } catch (err) {
+        log('/spotify-redirect', '', `[get-spotify-details-err] ${JSON.stringify(err)}`)
         return res.status(500).json({ err: JSON.stringify(err )})
       }
     } else {
       if (error) {
+        log('/spotify-redirect', '',`[request-module-err] ${JSON.stringify(error)}`)
         return res.status(500).json({ err: JSON.stringify(error) })
       }
       if (response.statusCode >= 300) {
+        log('/spotify-redirect', '', `[spotify-err] ${JSON.stringify(body)}`)
         return res.status(response.statusCode).send()
       }
     }

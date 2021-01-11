@@ -1,4 +1,4 @@
-const { getCurrentUnixTimeStamp } = require('../util')
+const { getCurrentUnixTimeStamp, log } = require('../util')
 const request = require('request')
 
 const authenticateClientCredentialsFlow = (req, res, next) => {
@@ -27,8 +27,10 @@ const authenticateClientCredentialsFlow = (req, res, next) => {
                 next()
               } else {
                 if (err) {
+                    log('/authenticate-client-credentials-flow', '', `[requst-module-err] ${JSON.stringify(err)}`)
                     return res.status(500).json({ err: JSON.stringify(err) })
                 }
+                log('/authenticate-client-credentials-flow', '', `[spotify-err] ${JSON.stringify(body)}`)
                 return res.status(response.statusCode).json()
             }
         })

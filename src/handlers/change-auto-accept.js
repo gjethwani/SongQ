@@ -1,5 +1,6 @@
 const UserModel = require('../models/user')
 const request = require('request')
+const { log } = require('../util')
 
 const changeAutoAccept = (userId, autoAccept) => {
     return new Promise((resolve, reject) => {
@@ -36,6 +37,7 @@ const changeAutoAccept = (userId, autoAccept) => {
 const changeAutoAcceptHandler = (req, res) => {
     let { autoAccept } = req.body
     if (autoAccept === undefined) {
+        log('/channge-auto-accept', userId, `autoaccept undefined`)
         return res.status(400).send()
     }
     autoAccept = JSON.parse(autoAccept)
@@ -57,12 +59,15 @@ const changeAutoAcceptHandler = (req, res) => {
                         return res.status(200).send()
                     })
                     .catch(response => {
+                        log('/change-auto-accept', userId, `[change-auto-accept-err] ${response.message}`)
                         return res.status(response.status, response.message)
                     })
             } else {
                 if (error) {
+                    log('/change-auto-accept', userId, `[request-module-err] ${JSON.stringify(error)}`)
                     return res.status(500).json({ err: JSON.stringify(error) })
                 }
+                log('/change-auto-accept', userId, `[request-module-bad-status-code] ${JSON.stringify(body)}`)
                 return res.status(response.statusCode).send()
             }
         })
@@ -72,6 +77,7 @@ const changeAutoAcceptHandler = (req, res) => {
                 return res.status(200).send()
             })
             .catch(response => {
+                log('/change-auto-accept', userId, `[change-auto-accept-err-1] ${response.message}`)
                 return res.status(response.status, response.message)
             })
     }

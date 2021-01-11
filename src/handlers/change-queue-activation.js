@@ -1,11 +1,12 @@
 const UserModel = require('../models/user')
 const fs = require('fs')
+const { log } = require('../util')
 
 const isCodeUnique = (code) => {
     return new Promise((resolve, reject) => {
         UserModel.findOne({ code, queueActivated: true }, (err, user) => {
             if (err) {
-                reject()
+                reject(err)
             } else {
                 if (user) {
                     resolve(false)
@@ -37,15 +38,22 @@ const generateCode = () => {
 const changeQueueActivationHandler = (req, res) => {
     let { userId, activated } = req.body
     if (!userId || activated === undefined) {
+        if (!userId) {
+            log('/change-queue-activation', userId, `no userId`)
+        }
+        if (activated === undefined) {
+            log('/change-queue-activation', userId, `activated undefined`)
+        }
         return res.status(400).send()
     }
     activated = JSON.parse(activated)
     UserModel.findOne({ userId }, async (err, user) => {
         if (err) {
-            console.log(err)
+            log('/change-queue-activation', userId, `[mongoose-find-err] ${JSON.stringify(err)}`)
             return res.status(500).json({ err: JSON.stringify(err) })
         }
         if (!user) {
+            log('/change-queue-activation', userId, `no user found`)
             return res.status(404).json()
         }
         if (!user.queueActivated && activated) {
@@ -56,6 +64,7 @@ const changeQueueActivationHandler = (req, res) => {
                 try {
                     unique = await isCodeUnique(code)
                 } catch (err) {
+                    log('/change-queue-activation', userId, `[unique-code-err] ${JSON.stringify(err)}`)
                     return res.status(500).json({ err: JSON.stringify(err) })
                 } 
             }
@@ -67,6 +76,7 @@ const changeQueueActivationHandler = (req, res) => {
                 return res.status(200).send()
             })
             .catch(err => {
+                log('/change-queue-activation', userId, `[mongoose-save-err] ${JSON.stringify(err)}`)
                 return res.status(500).json({ err: JSON.stringify(err) })
             })
     })

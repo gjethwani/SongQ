@@ -1,5 +1,5 @@
 const request = require('request')
-const { getCurrentUnixTimeStamp } = require('../util')
+const { getCurrentUnixTimeStamp, log } = require('../util')
 
 const guestLoginHandler = (req, res) => {
     const authOptions = {
@@ -21,9 +21,11 @@ const guestLoginHandler = (req, res) => {
             return res.status(200).send()
         } else {
             if (error) {
-                return res.status(500).json({ err: JSON.stringify(err) })
+                log('/guest-login', '', `[request-module-err] ${JSON.stringify(error)}`)
+                return res.status(500).json({ err: JSON.stringify(error) })
             }
-            return res.status(response.statusCode).json()
+            log('/guest-login', '', `[guest-login-err] ${JSON.stringify(body)}`)
+            return res.status(response.statusCode).send()
         }
     })
 }

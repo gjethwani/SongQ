@@ -1,4 +1,4 @@
-const { getCurrentUnixTimeStamp } = require('../util')
+const { getCurrentUnixTimeStamp, log } = require('../util')
 const request = require('request')
 
 const authenticateAuthorizationFlow = (req, res, next) => {
@@ -25,16 +25,18 @@ const authenticateAuthorizationFlow = (req, res, next) => {
                 req.session.accessToken = accessToken
                 req.session.refreshToken = refreshToken
                 req.session.expiresAt = expiresAt
+                next()
             } else {
                 if (error) {
+                    log('/authenticate-authorization-flow', req.session.userId, `[request-module-err] ${JSON.stringify(error)}`)
                     return res.status(500).json({ err: JSON.stringify(error) })
                 }
                 if (response.statusCode >= 300) {
+                    log('/authenticate-authorization-flow', req.session.userId, `[spotify-err] ${JSON.stringify(body)}`)
                     return res.status(response.statusCode).send()
                 }
             }
         })
-        next()
     } else {
         next()
     }

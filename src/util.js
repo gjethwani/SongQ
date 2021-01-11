@@ -1,4 +1,5 @@
 const requestModule = require('request')
+const { logger } = require('./setup')
 
 const getCurrentUnixTimeStamp = () => {
     return Math.round((new Date()).getTime() / 1000)
@@ -40,7 +41,22 @@ const addToQueue = (songId, accessToken, successCallback) => {
     
 }
 
+const log = (endpoint, userId, message) => {
+    if (process.env.ENV === 'local') {
+        console.log(message)
+        return
+    }
+    endpoint = endpoint.substring(1)
+    logger.log(`[ID: ${userId}] ${message}`, [endpoint], err => {
+        if (err) {
+            console.log(err)
+            console.log('Logger Error', JSON.stringify(err))
+        }
+    })
+}
+
 module.exports = {
     getCurrentUnixTimeStamp,
-    addToQueue
+    addToQueue,
+    log
 }
