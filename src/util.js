@@ -16,7 +16,6 @@ const addToQueue = (songId, accessToken, successCallback) => {
         }
         requestModule.post(options, async (error, response, body) => {
             if (!error && response.statusCode >= 200 && response.statusCode < 300) {
-                console.log("hjere1")
                 resolve(successCallback())
             } else {
                 if (error) {
@@ -30,11 +29,13 @@ const addToQueue = (songId, accessToken, successCallback) => {
                             status: 404,
                             message: 'no queue'
                         })
+                    } else {
+                        reject({
+                            status: response.statusCode,
+                            message: `spotify error ${body}`
+                        })
                     }
-                    reject({
-                        status: response.statusCode,
-                        message: 'spotify error'
-                    })
+                    
                 }
             }
         })
