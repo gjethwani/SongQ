@@ -37,35 +37,39 @@ const serviceAllHandler = (req, res) => {
             requests.sort((r1, r2) => {
                 return new Date(r1.createdAt) - new Date(r2.createdAt)
             })
+            const songsAdded = []
             for (let i = 0; i < requests.length; i++) {
                 const r = requests[i]
-                try {
-                    const response = await addToQueue(r.songId, req.session.accessToken, async () => {
-                        try {
-                            await RequestModel.findByIdAndUpdate(r._id, { $set: { serviced: true, accepted }})
-                            return {
-                                status: 200
+                if (!songsAdded.includes(r.songId)) {
+                    try {
+                        const response = await addToQueue(r.songId, req.session.accessToken, async () => {
+                            try {
+                                await RequestModel.findByIdAndUpdate(r._id, { $set: { serviced: true, accepted }})
+                                songsAdded.push(r.songId)
+                                return {
+                                    status: 200
+                                }
+                            } catch(err) {
+                                return {
+                                    status: 500,
+                                    message: JSON.stringify(err)
+                                }
                             }
-                        } catch(err) {
-                            return {
-                                status: 500,
-                                message: JSON.stringify(err)
-                            }
+                        })
+                        if (response.status === 500) {
+                            log('/service-all', userId, `[spotify-err] ${response.status} ${response.message}`)
+                            errFound = true
+                            return res.status(500).json({ err: response.message })
                         }
-                    })
-                    if (response.status === 500) {
-                        log('/service-all', userId, `[spotify-err] ${response.status} ${response.message}`)
+                        wait(50)
+                    } catch(err) {
+                        log('/service-all', userId, `[add-to-queue-err] ${err.message}`)
                         errFound = true
-                        return res.status(500).json({ err: response.message })
+                        return res.status(err.status).json({ err: err.message })
                     }
-                    wait(50)
-                } catch(err) {
-                    log('/service-all', userId, `[add-to-queue-err] ${err.message}`)
-                    errFound = true
-                    return res.status(err.status).json({ err: err.message })
                 }
+                
             }
-            console.log(errFound)
             if (!errFound) {
                 return res.status(200).send()
             }
