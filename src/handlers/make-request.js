@@ -2,7 +2,7 @@ const UserModel = require('../models/user')
 const RequestModel = require('../models/request')
 const WSConnectionModel = require('../models/ws-connection')
 const { expressWs } = require('../setup')
-const { addToQueue, log } = require('../util')
+const { log } = require('../util')
 
 const makeRequestHandler = (req, res) => {
     const { userId, songId, songName, artists, album, albumArt } = req.body
@@ -44,20 +44,6 @@ const makeRequestHandler = (req, res) => {
         const request = new RequestModel(requestData)
         request.save()
             .then(doc => {
-                if (user.autoAccept) {
-                    addToQueue(songId, req.session.accessToken, () => {
-                        return {
-                            status: 200
-                        }
-                    })
-                        .then(() => {
-                            return res.status(200).send()
-                        })
-                        .catch(err => {
-                            log('/make-request', userId, `[add-to-queue-err] ${err.message}`)
-                            return res.status(err.status).json({ err: err.message })
-                        })
-                }
                 WSConnectionModel.findOne({ userId }, (err, connection) => {
                     if (err) {
                         log('/make-request', userId, `[ws-find-err] ${JSON.stringify(err)}`)
