@@ -17,6 +17,7 @@ const { canCreateWSConnectionHandler } = require('./handlers/can-create-ws-conne
 const { isQueueActivatedHandler } = require('./handlers/is-queue-active')
 const { changeAutoAcceptHandler } = require('./handlers/change-auto-accept')
 const { serviceAllHandler } = require('./handlers/service-all')
+const { getRecentlyApprovedHandler } = require('./handlers/get-recently-approved')
 
 app.patch('/change-queue-activation', authenticateAuthorizationFlow, changeQueueActivationHandler)
 
@@ -26,9 +27,9 @@ app.get('/now-playing', authenticateAuthorizationFlow, nowPlayingHandler)
 
 app.post('/guest-login', guestLoginHandler)
 
-app.get('/get-user-name', getUserNameHandler)
+app.get('/get-user-name', authenticateClientCredentialsFlow, getUserNameHandler)
 
-app.post('/make-request', makeRequestHandler)
+app.post('/make-request', authenticateClientCredentialsFlow, makeRequestHandler)
 
 app.post('/search-songs', authenticateClientCredentialsFlow, searchSongsHandler)
 
@@ -42,11 +43,13 @@ app.get('/get-user-details', authenticateAuthorizationFlow, getUserDetailsHandle
 
 app.post('/can-create-ws-connection', authenticateAuthorizationFlow, canCreateWSConnectionHandler)
 
-app.post('/is-queue-active', isQueueActivatedHandler)
+app.post('/is-queue-active', authenticateClientCredentialsFlow, isQueueActivatedHandler)
 
 app.post('/change-auto-accept', authenticateAuthorizationFlow, changeAutoAcceptHandler)
 
-app.post('/service-all', serviceAllHandler)
+app.post('/service-all', authenticateAuthorizationFlow, serviceAllHandler)
+
+app.get('/get-recently-approved', authenticateClientCredentialsFlow, getRecentlyApprovedHandler)
 
 app.ws('/connect', connectHandler)
 
