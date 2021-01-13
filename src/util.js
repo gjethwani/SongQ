@@ -32,7 +32,7 @@ const addToQueue = (songId, accessToken, successCallback) => {
                     } else {
                         reject({
                             status: response.statusCode,
-                            message: `spotify error ${body}`
+                            message: `spotify error ${JSON.stringify(body)}`
                         })
                     }
                     
