@@ -2,7 +2,7 @@ const UserModel = require('../models/user')
 const RequestModel = require('../models/request')
 const WSConnectionModel = require('../models/ws-connection')
 const { expressWs } = require('../setup')
-const { log } = require('../util')
+const { log, addToQueue } = require('../util')
 
 const makeRequestHandler = (req, res) => {
     const { userId, songId, songName, artists, album, albumArt } = req.body
@@ -15,7 +15,7 @@ const makeRequestHandler = (req, res) => {
         }
         return res.status(400).send()
     }
-    UserModel.findOne({ userId }, (err, user) => {
+    UserModel.findOne({ userId }, async (err, user) => {
         if (err) {
             log('/make-request', userId, `[mongoose-find-err] ${JSON.stringify(err)}`)
             return res.status(500).json({ err: JSON.stringify(err) })
@@ -38,8 +38,29 @@ const makeRequestHandler = (req, res) => {
             serviced: false
         }
         if (user.autoAccept) {
-            requestData.serviced = true
-            requestData.accepted = true
+            const db = RequestModel.db.db
+            try {
+                const result = await db.collection('sessions').find({"session.userId": userId }).toArray()
+                let correctAccessToken = ''
+                let biggestTimeDiff = 0
+                result.forEach(r => {
+                    const { expiresAt, accessToken } = r.session
+                    const timeDiff = (expiresAt * 1000) - new Date().getTime()
+                    if (timeDiff > biggestTimeDiff) {
+                        correctAccessToken = accessToken
+                        biggestTimeDiff = timeDiff
+                    }
+                })
+                if (correctAccessToken !== '') {
+                    await addToQueue(songId, correctAccessToken, async () => {
+                        requestData.serviced = true
+                        requestData.accepted = true
+                    })
+                }
+            } catch (err) {
+                console.log(err)
+                log('/make-request', userId, `[auto-accept-err] ${JSON.stringify(err)}`)
+            }
         }
         const request = new RequestModel(requestData)
         request.save()

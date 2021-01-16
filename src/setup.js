@@ -53,15 +53,6 @@ const sessionOptions = {
   cookie
 }
 
-const mongoose = require('mongoose')
-const connectToDb = async () => { await mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })}
-try {
-    connectToDb()
-    console.log('Database connection successful')
-} catch(err)  {
-    console.log(err)
-    console.error('Database connection error')
-}
 app.use(cookieParser(sessionOptions.secret)) // read cookies (needed for auth)
 const sessionParser = session(sessionOptions)
 app.use(sessionParser)
@@ -74,10 +65,20 @@ const logger = loggly.createClient({
     subdomain: process.env.LOGGLY_SUBDOMAIN,
 })
 
+const mongoose = require('mongoose')
+const connectToDb = async () => { await mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true }) }
+try {
+    connectToDb()
+    console.log('Database connection successful')
+} catch(err)  {
+    console.log(err)
+    console.error('Database connection error')
+}
+
 module.exports = {
     app,
     swaggerUi,
     swaggerDocument,
     expressWs,
-    logger
+    logger,
 }
