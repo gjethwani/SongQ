@@ -18,6 +18,7 @@ const { isQueueActivatedHandler } = require('./handlers/is-queue-active')
 const { changeAutoAcceptHandler } = require('./handlers/change-auto-accept')
 const { serviceAllHandler } = require('./handlers/service-all')
 const { getRecentlyApprovedHandler } = require('./handlers/get-recently-approved')
+const { getRequestsHandler } = require('./handlers/get-requests')
 
 app.patch('/change-queue-activation', authenticateAuthorizationFlow, changeQueueActivationHandler)
 
@@ -50,6 +51,8 @@ app.post('/change-auto-accept', authenticateAuthorizationFlow, changeAutoAcceptH
 app.post('/service-all', authenticateAuthorizationFlow, serviceAllHandler)
 
 app.get('/get-recently-approved', authenticateClientCredentialsFlow, getRecentlyApprovedHandler)
+
+app.get('/get-requests', authenticateAuthorizationFlow, getRequestsHandler)
 
 app.ws('/connect', connectHandler)
 
