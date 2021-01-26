@@ -56,6 +56,13 @@ const makeRequestHandler = (req, res) => {
                         requestData.serviced = true
                         requestData.accepted = true
                     })
+                } else {
+                    user.autoAccept = false
+                    try {
+                        await user.save()
+                    } catch(err) {
+                        log('/make-request', userId, `[change-auto-accept-err] ${JSON.stringify(err)}`)
+                    }
                 }
             } catch (err) {
                 console.log(err)
