@@ -25,7 +25,9 @@ const getSpotifyDetails = (accessToken) => {
             name: body.display_name,
             email: body.email,
             product: body.product,
-            profilePicture: body.images[0].url
+          }
+          if (body.images && body.images.length > 0) {
+            userDetails.profilePicture = body.images[0].url
           }
           resolve(userDetails)
         }
