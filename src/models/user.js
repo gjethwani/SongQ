@@ -21,6 +21,9 @@ const UserSchema = new mongoose.Schema({
     autoAccept: {
         type: Boolean,
         required: [true, "autoAccept required"]
+    },
+    profilePicture: {
+        type: String
     }
 }, { 
     timestamps: { 

@@ -23,7 +23,9 @@ const getSpotifyDetails = (accessToken) => {
           const userDetails = {
             userId: body.id,
             name: body.display_name,
-            email: body.email
+            email: body.email,
+            product: body.product,
+            profilePicture: body.images[0].url
           }
           resolve(userDetails)
         }
@@ -65,7 +67,11 @@ const spotifyRedirectHandler = function(req, res) {
           expiresIn = body.expires_in
       const expiresAt = getCurrentUnixTimeStamp() + expiresIn
       try {
-        const { userId, name, email } = await getSpotifyDetails(accessToken)
+        const { userId, name, email, product, profilePicture } = await getSpotifyDetails(accessToken)
+        if (product !== 'premium') {
+          log('/spotify-redirect', userId, `no premium`)
+          return res.redirect(`${process.env.FRONTEND_URL}/login?err=nopremium`)
+        }
         req.session.userId = userId
         req.session.accessToken = accessToken
         req.session.refreshToken = refreshToken
@@ -81,17 +87,18 @@ const spotifyRedirectHandler = function(req, res) {
               userId,
               name,
               email,
-              queueActivated: false,
-              autoAccept: false
+              queueActivated: !JSON.stringify(process.env.QUEUE_ACTIVE_FEATURE_ENABLED),
+              autoAccept: false,
+              profilePicture
             })
           } else {
             newUser = checkProperties(
-              ['userId', 'name', 'email'],
-              [userId, name, email],
+              ['userId', 'name', 'email', 'profilePicture'],
+              [userId, name, email, profilePicture],
               user
             )
             if (newUser.queueActivated === undefined) {
-              newUser.queueActivated = false
+              newUser.queueActivated = !JSON.stringify(process.env.QUEUE_ACTIVE_FEATURE_ENABLED)
             }
             if (newUser.autoAccept === undefined) {
               newUser.autoAccept = false
