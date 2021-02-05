@@ -67,6 +67,12 @@ const serviceAllHandler = (req, res) => {
                         errFound = true
                         return res.status(err.status).json({ err: err.message })
                     }
+                } else {
+                    try {
+                        await RequestModel.findByIdAndUpdate(r._id, { $set: { serviced: true, accepted }})
+                    }  catch(err) {
+                        log('/service-all', userId, `[mongoose-update-err] ${JSON.stringify(err)}`)
+                    }
                 }
                 
             }

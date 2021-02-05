@@ -27,8 +27,10 @@ const serviceRequestHandler = (req, res) => {
                 request.serviced = true
                 request.accepted = false
                 await request.save()
+                await RequestModel.updateMany({ songId: request.songId }, { $set: { serviced: true, accepted }})
                 return res.status(200).send()
             } catch(err) {
+                console.log(err)
                 log('/service-request', req.session.userId, `[mongoose-save-err] [${requestId}] ${JSON.stringify(err)}`)
                 return res.status(500).json({ err: JSON.stringify(err) })
             }
@@ -37,6 +39,7 @@ const serviceRequestHandler = (req, res) => {
                 try {
                     request.serviced = true
                     request.accepted = true
+                    await RequestModel.updateMany({ songId: request.songId }, { $set: { serviced: true, accepted }})
                     await request.save()
                     return {
                         status: 200
