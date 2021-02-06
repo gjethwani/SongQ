@@ -20,6 +20,7 @@ const { serviceAllHandler } = require('./handlers/service-all')
 const { getRecentlyApprovedHandler } = require('./handlers/get-recently-approved')
 const { getRequestsHandler } = require('./handlers/get-requests')
 const { subscribeHandler } = require('./handlers/subscribe')
+const { getRecommendationHandler } = require('./handlers/get-recommendation')
 
 app.patch('/change-queue-activation', authenticateAuthorizationFlow, changeQueueActivationHandler)
 
@@ -54,6 +55,8 @@ app.post('/service-all', authenticateAuthorizationFlow, serviceAllHandler)
 app.get('/get-recently-approved', authenticateClientCredentialsFlow, getRecentlyApprovedHandler)
 
 app.get('/get-requests', authenticateAuthorizationFlow, getRequestsHandler)
+
+app.get('/get-recommendation', authenticateAuthorizationFlow, getRecommendationHandler)
 
 app.get('/subscribe', subscribeHandler)
 

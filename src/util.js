@@ -1,4 +1,5 @@
 const requestModule = require('request')
+const RequestModel = require('./models/request')
 const { logger } = require('./setup')
 
 const getCurrentUnixTimeStamp = () => {
@@ -43,6 +44,18 @@ const addToQueue = (songId, accessToken, successCallback) => {
     
 }
 
+const getRecentlyApproved = (userId, limit) => {
+    return new Promise((resolve, reject) => {
+        RequestModel.find({ userId, accepted: true }, {}, { sort: { 'createdAt': -1}}, (err, requests) => {
+            if (err) {
+                reject(err)
+            }
+            resolve(requests)
+        })
+        .limit(limit)
+    })
+}
+
 const log = (endpoint, userId, message) => {
     if (process.env.ENV === 'local') {
         console.log(message)
@@ -51,7 +64,6 @@ const log = (endpoint, userId, message) => {
     endpoint = endpoint.substring(1)
     logger.log(`[ID: ${userId}] ${message}`, [endpoint], err => {
         if (err) {
-            console.log(err)
             console.log('Logger Error', JSON.stringify(err))
         }
     })
@@ -60,5 +72,6 @@ const log = (endpoint, userId, message) => {
 module.exports = {
     getCurrentUnixTimeStamp,
     addToQueue,
+    getRecentlyApproved,
     log
 }

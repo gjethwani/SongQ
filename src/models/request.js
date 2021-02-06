@@ -27,6 +27,9 @@ const RequestSchema = new mongoose.Schema({
     },
     accepted: {
         type: Boolean
+    },
+    recommended: {
+        type: Boolean,
     }
 }, { 
     timestamps: { 

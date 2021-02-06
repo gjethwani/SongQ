@@ -35,7 +35,8 @@ const makeRequestHandler = (req, res) => {
             artists,
             album,
             albumArt,
-            serviced: false
+            serviced: false,
+            recommended: false
         }
         if (user.autoAccept) {
             const db = RequestModel.db.db
@@ -65,7 +66,6 @@ const makeRequestHandler = (req, res) => {
                     }
                 }
             } catch (err) {
-                console.log(err)
                 log('/make-request', userId, `[auto-accept-err] ${JSON.stringify(err)}`)
             }
         }

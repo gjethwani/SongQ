@@ -30,7 +30,6 @@ const serviceRequestHandler = (req, res) => {
                 await RequestModel.updateMany({ songId: request.songId }, { $set: { serviced: true, accepted }})
                 return res.status(200).send()
             } catch(err) {
-                console.log(err)
                 log('/service-request', req.session.userId, `[mongoose-save-err] [${requestId}] ${JSON.stringify(err)}`)
                 return res.status(500).json({ err: JSON.stringify(err) })
             }
