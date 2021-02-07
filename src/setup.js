@@ -15,6 +15,7 @@ const app = express()
 app.use('/api-docs', swaggerUi.serve)
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json({limit: '50mb'}))
+const moesif = require('moesif-nodejs')
 
 const cors = require('cors')
 
@@ -72,6 +73,17 @@ try {
     console.log('Database connection successful')
 } catch(err)  {
     console.error('Database connection error')
+}
+
+const moesifMiddleware = moesif({
+  applicationId: process.env.MOESIF_APPLICATION_ID,
+  identifyUser: function (req, res) {
+    return req.userId ? req.userId : undefined
+  },
+});
+
+if (process.env.ENV !== 'local') {
+  app.use(moesifMiddleware)
 }
 
 module.exports = {
