@@ -72,7 +72,7 @@ const spotifyRedirectHandler = function(req, res) {
         const { userId, name, email, product, profilePicture } = await getSpotifyDetails(accessToken)
         if (product !== 'premium') {
           log('/spotify-redirect', userId, `no premium`)
-          return res.redirect(`${process.env.FRONTEND_URL}/login?err=nopremium`)
+          return res.redirect(`${process.env.FRONTEND_URL}/?err=nopremium`)
         }
         req.session.userId = userId
         req.session.accessToken = accessToken
