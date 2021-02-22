@@ -21,6 +21,7 @@ const { getRecentlyApprovedHandler } = require('./handlers/get-recently-approved
 const { getRequestsHandler } = require('./handlers/get-requests')
 const { subscribeHandler } = require('./handlers/subscribe')
 const { getRecommendationHandler } = require('./handlers/get-recommendation')
+const { submitFeedbackHandler } = require('./handlers/submit-feedback')
 
 app.patch('/change-queue-activation', authenticateAuthorizationFlow, changeQueueActivationHandler)
 
@@ -59,6 +60,8 @@ app.get('/get-requests', authenticateAuthorizationFlow, getRequestsHandler)
 app.get('/get-recommendation', authenticateAuthorizationFlow, getRecommendationHandler)
 
 app.get('/subscribe', subscribeHandler)
+
+app.post('/submit-feedback', submitFeedbackHandler)
 
 app.ws('/connect', connectHandler)
 
