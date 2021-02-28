@@ -59,9 +59,9 @@ app.get('/get-requests', authenticateAuthorizationFlow, getRequestsHandler)
 
 app.get('/get-recommendation', authenticateAuthorizationFlow, getRecommendationHandler)
 
-app.get('/subscribe', subscribeHandler)
+app.post('/submit-feedback', authenticateAuthorizationFlow, submitFeedbackHandler)
 
-app.post('/submit-feedback', submitFeedbackHandler)
+app.get('/subscribe', subscribeHandler)
 
 app.ws('/connect', connectHandler)
 
