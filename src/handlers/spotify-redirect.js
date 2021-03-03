@@ -89,7 +89,6 @@ const spotifyRedirectHandler = function(req, res) {
               userId,
               name,
               email,
-              queueActivated: !JSON.stringify(process.env.QUEUE_ACTIVE_FEATURE_ENABLED),
               autoAccept: false,
               profilePicture
             })
@@ -99,9 +98,6 @@ const spotifyRedirectHandler = function(req, res) {
               [userId, name, email, profilePicture],
               user
             )
-            if (newUser.queueActivated === undefined) {
-              newUser.queueActivated = !JSON.stringify(process.env.QUEUE_ACTIVE_FEATURE_ENABLED)
-            }
             if (newUser.autoAccept === undefined) {
               newUser.autoAccept = false
             }

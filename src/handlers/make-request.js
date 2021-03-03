@@ -24,10 +24,6 @@ const makeRequestHandler = (req, res) => {
             log('/make-request', userId, `no user`)
             return res.status(404).send()
         }
-        if (!user.queueActivated) {
-            log('/make-request', userId, `queue not active`)
-            return res.status(403).json({ err: `user's queue not activated`})
-        }
         const requestData = {
             userId,
             songId,

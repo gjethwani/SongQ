@@ -3,7 +3,7 @@ const { log } = require('../util')
 
 const canCreateWSConnectionHandler = (req, res) => {
     const { userId } = req.session
-    WSConnectionModel.findOneAndDelete({ userId }, async (err) => {
+    WSConnectionModel.deleteMany({ userId }, async (err) => {
         if (err) {
             log('/can-create-ws-connection', userId, `[mongodb-delete-err] ${JSON.stringify(err)}`)
         } else {

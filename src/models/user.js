@@ -11,10 +11,6 @@ const UserSchema = new mongoose.Schema({
     email: {
         type: String
     },
-    queueActivated: {
-        type: Boolean,
-        required: [true, "queueActivated required"]
-    },
     code: {
         type: String
     },

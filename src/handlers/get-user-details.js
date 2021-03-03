@@ -13,24 +13,21 @@ const getUserDetailsHandler = (req, res) => {
             log('/get-user-details', userId, `no user`)
             return res.status(404).send()
         }
-        const { code, name, queueActivated, autoAccept, profilePicture } = user
+        const { code, name, autoAccept, profilePicture } = user
         const userObj = {
             userId,
             code,
             name,
-            queueActivated,
             autoAccept,
             profilePicture,
             requests: []
         }
-        if (queueActivated) {
-            try { 
-                const requests = await RequestModel.find({ userId, serviced: false})
-                userObj.requests = requests
-            } catch (err) {
-                log('/get-user-details', userId, `[mongoose-request-find-err] ${JSON.stringify(err)}`)
-                return res.status(500).json({ err: JSON.stringify(err) })
-            }
+        try { 
+            const requests = await RequestModel.find({ userId, serviced: false})
+            userObj.requests = requests
+        } catch (err) {
+            log('/get-user-details', userId, `[mongoose-request-find-err] ${JSON.stringify(err)}`)
+            return res.status(500).json({ err: JSON.stringify(err) })
         }
         return res.status(200).json({ user: userObj })
     })

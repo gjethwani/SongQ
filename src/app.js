@@ -1,5 +1,4 @@
-const { app, swaggerUi, swaggerDocument } = require('./setup')
-const { changeQueueActivationHandler } = require('./handlers/change-queue-activation')
+const { app } = require('./setup')
 const { getQueueByCodeHandler } = require('./handlers/get-queue-by-code')
 const { nowPlayingHandler } = require('./handlers/now-playing')
 const { guestLoginHandler } = require('./handlers/guest-login')
@@ -14,7 +13,6 @@ const { getUserDetailsHandler } = require('./handlers/get-user-details')
 const { getUserNameHandler } = require('./handlers/get-user-name')
 const { connectHandler } = require('./handlers/connect')
 const { canCreateWSConnectionHandler } = require('./handlers/can-create-ws-connection')
-const { isQueueActivatedHandler } = require('./handlers/is-queue-active')
 const { changeAutoAcceptHandler } = require('./handlers/change-auto-accept')
 const { serviceAllHandler } = require('./handlers/service-all')
 const { getRecentlyApprovedHandler } = require('./handlers/get-recently-approved')
@@ -22,8 +20,6 @@ const { getRequestsHandler } = require('./handlers/get-requests')
 const { subscribeHandler } = require('./handlers/subscribe')
 const { getRecommendationHandler } = require('./handlers/get-recommendation')
 const { submitFeedbackHandler } = require('./handlers/submit-feedback')
-
-app.patch('/change-queue-activation', authenticateAuthorizationFlow, changeQueueActivationHandler)
 
 app.get('/get-queue-by-code', getQueueByCodeHandler)
 
@@ -47,8 +43,6 @@ app.get('/get-user-details', authenticateAuthorizationFlow, getUserDetailsHandle
 
 app.post('/can-create-ws-connection', authenticateAuthorizationFlow, canCreateWSConnectionHandler)
 
-app.post('/is-queue-active', authenticateClientCredentialsFlow, isQueueActivatedHandler)
-
 app.post('/change-auto-accept', authenticateAuthorizationFlow, changeAutoAcceptHandler)
 
 app.post('/service-all', authenticateAuthorizationFlow, serviceAllHandler)
@@ -64,8 +58,6 @@ app.post('/submit-feedback', authenticateAuthorizationFlow, submitFeedbackHandle
 app.get('/subscribe', subscribeHandler)
 
 app.ws('/connect', connectHandler)
-
-app.get('/api-docs', swaggerUi.setup(swaggerDocument))
 
 const port = process.env.PORT || 5000
 app.listen(port, function () {
