@@ -13,15 +13,56 @@ const joinArtists = artistsRaw => {
     return result
 }
 
+const getUsersTopTracks = accessToken => {
+    return new Promise((resolve, reject) => {
+        const options = {
+            url: "https://api.spotify.com/v1/me/top/tracks?time_range=short_term",
+            headers: {
+                'Authorization': `Bearer ${accessToken}` 
+            },
+            json: true
+        }
+        request.get(options, (error, response, body) => {
+            if (!error && response.statusCode >= 200 && response.statusCode < 300) {
+                const { items } = body
+                const trackIds = []
+                for (let i = 0; i < 5; i++) {
+                    if (i >= items.length) {
+                        break
+                    }
+                    trackIds.push(items[i].id)
+                }
+                resolve(trackIds)
+            } else {
+                if (error) {
+                    reject({ error })
+                } else {
+                    reject({ body, statusCode: response.statusCode })
+                }
+            }
+        })
+    })
+}
+
 const getRecommendationHandler = (req, res) => {
     const { userId, accessToken } = req.session
     getRecentlyApproved(userId, 5)
-        .then(requests => {
+        .then(async requests => {
             let requestsString = ''
-            for (let i = 0; i < requests.length; i++) {
-                requestsString += requests[i].songId
-                if (i < requests.length - 1) {
-                    requestsString += ','
+            if (requests.length > 0) {
+                for (let i = 0; i < requests.length; i++) {
+                    requestsString += requests[i].songId
+                    if (i < requests.length - 1) {
+                        requestsString += ','
+                    }
+                }
+            } else {
+                try {
+                    const trackIds = await getUsersTopTracks(accessToken)
+                    requestsString = trackIds.join(',')
+                } catch(err) {
+                    log('/get-recommendation', userId, `[user-top-tracks] ${JSON.stringify(err)}`)
+                    return res.status(500).send()
                 }
             }
             const options = {
