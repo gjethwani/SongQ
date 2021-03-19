@@ -7,9 +7,6 @@ const submitFeedbackHandler = (req, res) => {
     if (!feedback) {
         return res.status(400).json({ err: 'feedback required'})
     }
-    if (!rating) {
-        return res.status(400).json({ err: 'rating required'})
-    }
     const feedbackObject = new FeedbackSchema({ feedback, rating, userId })
     feedbackObject.save()
         .then(() => {
