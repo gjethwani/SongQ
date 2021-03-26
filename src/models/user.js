@@ -17,6 +17,12 @@ const UserSchema = new mongoose.Schema({
     },
     profilePicture: {
         type: String
+    },
+    emailPreference: { // "none, unreadRequests, allRequests"
+        type: String
+    },
+    shouldSendEmail: {
+        type: Boolean
     }
 }, { 
     timestamps: { 

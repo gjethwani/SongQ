@@ -90,7 +90,9 @@ const spotifyRedirectHandler = function(req, res) {
               name,
               email,
               autoAccept: false,
-              profilePicture
+              profilePicture,
+              emailPreference: 'unreadRequests',
+              shouldSendEmail: true
             })
           } else {
             newUser = checkProperties(
@@ -100,6 +102,12 @@ const spotifyRedirectHandler = function(req, res) {
             )
             if (newUser.autoAccept === undefined) {
               newUser.autoAccept = false
+            }
+            if (newUser.emailPreference === undefined) {
+              emailPreference = 'unreadRequests'
+            }
+            if (newUser.shouldSendEmail === undefined) {
+              shouludSendEmail = true
             }
           }
           try {

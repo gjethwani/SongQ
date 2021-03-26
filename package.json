@@ -28,6 +28,7 @@
     "loggly": "^1.1.1",
     "moesif-nodejs": "^3.1.5",
     "mongoose": "^5.11.9",
+    "nodemailer": "^6.5.0",
     "request": "^2.88.2",
     "swagger-ui-express": "^4.1.6",
     "validator": "^13.5.2"

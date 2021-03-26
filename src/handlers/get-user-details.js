@@ -13,14 +13,21 @@ const getUserDetailsHandler = (req, res) => {
             log('/get-user-details', userId, `no user`)
             return res.status(404).send()
         }
-        const { code, name, autoAccept, profilePicture } = user
+        const { 
+            code, 
+            name, 
+            autoAccept, 
+            profilePicture, 
+            emailPreference 
+        } = user
         const userObj = {
             userId,
             code,
             name,
             autoAccept,
             profilePicture,
-            requests: []
+            requests: [],
+            emailPreference
         }
         try { 
             const requests = await RequestModel.find({ userId, serviced: false})

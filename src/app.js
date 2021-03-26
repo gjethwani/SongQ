@@ -1,7 +1,7 @@
 const { app } = require('./setup')
 const { nowPlayingHandler } = require('./handlers/now-playing')
 const { guestLoginHandler } = require('./handlers/guest-login')
-const { makeRequestHandler } = require('./handlers/make-request')
+const { makeRequestHandler, sendEmailNotification } = require('./handlers/make-request')
 const { searchSongsHandler } = require('./handlers/search-songs')
 const { serviceRequestHandler } = require('./handlers/service-request')
 const { spotifyLogInHandler } = require('./handlers/spotify-login')
@@ -19,6 +19,8 @@ const { getRequestsHandler } = require('./handlers/get-requests')
 const { subscribeHandler } = require('./handlers/subscribe')
 const { getRecommendationHandler } = require('./handlers/get-recommendation')
 const { submitFeedbackHandler } = require('./handlers/submit-feedback')
+const { changeEmailPreferenceHandler } = require('./handlers/change-email-preference')
+const { changeShouldSendEmailHandler } = require('./handlers/change-should-send-email')
 
 app.get('/now-playing', authenticateAuthorizationFlow, nowPlayingHandler)
 
@@ -51,6 +53,10 @@ app.get('/get-requests', authenticateAuthorizationFlow, getRequestsHandler)
 app.get('/get-recommendation', authenticateAuthorizationFlow, getRecommendationHandler)
 
 app.post('/submit-feedback', authenticateAuthorizationFlow, submitFeedbackHandler)
+
+app.post('/change-email-preference', authenticateAuthorizationFlow, changeEmailPreferenceHandler)
+
+app.post('/change-should-send-email', authenticateAuthorizationFlow, changeShouldSendEmailHandler)
 
 app.get('/subscribe', subscribeHandler)
 

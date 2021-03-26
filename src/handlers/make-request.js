@@ -3,6 +3,25 @@ const RequestModel = require('../models/request')
 const WSConnectionModel = require('../models/ws-connection')
 const { expressWs } = require('../setup')
 const { log, addToQueue } = require('../util')
+const nodemailer = require("nodemailer")
+
+const sendEmailNotification = async recipient => {
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.EMAIL_ADDRESS,
+            pass: process.env.EMAIL_PASSWORD,
+        }
+    })
+
+    await transporter.sendMail({
+        from: '"SongQ Team" <info@songq.io>',
+        to: recipient,
+        subject: "You have unread requests",
+        text: "Go to songq.io to attend to your requests",
+        html: "Go to songq.io to attend to your requests",
+    })
+}
 
 const makeRequestHandler = (req, res) => {
     const { userId, songId, songName, artists, album, albumArt } = req.body
@@ -68,6 +87,8 @@ const makeRequestHandler = (req, res) => {
         const request = new RequestModel(requestData)
         request.save()
             .then(doc => {
+
+                // send message on websocket
                 WSConnectionModel.findOne({ userId }, (err, connection) => {
                     if (err) {
                         log('/make-request', userId, `[ws-find-err] ${JSON.stringify(err)}`)
@@ -88,16 +109,30 @@ const makeRequestHandler = (req, res) => {
                         }
                     }
                 })
+
+                // send email
+                if(!user.autoAccept && user.shouldSendEmail && user.emailPreference !== "none") {
+                    sendEmailNotification(user.email)
+                    if (user.emailPreference === "unreadRequests") {
+                        user.shouldSendEmail = false
+                        user.save()
+                            .catch(err => {
+                                log('/make-request',  userId, `[mongoose-user-save-err] ${JSON.stringify(err)}`)
+                            })
+                    }
+                }
+
                 return res.status(200).send()
                 
             })
             .catch(err => {
-                log('/make-request', userId, `[mongoose-save-err] ${JSON.stringify(err)}`)
+                log('/make-request', userId, `[mongoose-request-save-err] ${JSON.stringify(err)}`)
                 return res.status(500).json({ err: JSON.stringify(err) })
             })
     })
 }
 
 module.exports = {
-    makeRequestHandler
+    makeRequestHandler,
+    sendEmailNotification
 }
