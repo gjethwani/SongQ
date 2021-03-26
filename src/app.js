@@ -1,5 +1,4 @@
 const { app } = require('./setup')
-const { getQueueByCodeHandler } = require('./handlers/get-queue-by-code')
 const { nowPlayingHandler } = require('./handlers/now-playing')
 const { guestLoginHandler } = require('./handlers/guest-login')
 const { makeRequestHandler } = require('./handlers/make-request')
@@ -20,8 +19,6 @@ const { getRequestsHandler } = require('./handlers/get-requests')
 const { subscribeHandler } = require('./handlers/subscribe')
 const { getRecommendationHandler } = require('./handlers/get-recommendation')
 const { submitFeedbackHandler } = require('./handlers/submit-feedback')
-
-app.get('/get-queue-by-code', getQueueByCodeHandler)
 
 app.get('/now-playing', authenticateAuthorizationFlow, nowPlayingHandler)
 

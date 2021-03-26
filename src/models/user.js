@@ -11,9 +11,6 @@ const UserSchema = new mongoose.Schema({
     email: {
         type: String
     },
-    code: {
-        type: String
-    },
     autoAccept: {
         type: Boolean,
         required: [true, "autoAccept required"]
