@@ -30,6 +30,9 @@ const RequestSchema = new mongoose.Schema({
     },
     recommended: {
         type: Boolean,
+    },
+    similar: {
+        type: Object
     }
 }, { 
     timestamps: { 

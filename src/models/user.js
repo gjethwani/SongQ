@@ -23,6 +23,9 @@ const UserSchema = new mongoose.Schema({
     },
     shouldSendEmail: {
         type: Boolean
+    },
+    topTracks: {
+        type: Array
     }
 }, { 
     timestamps: { 

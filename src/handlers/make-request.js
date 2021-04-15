@@ -2,8 +2,9 @@ const UserModel = require('../models/user')
 const RequestModel = require('../models/request')
 const WSConnectionModel = require('../models/ws-connection')
 const { expressWs } = require('../setup')
-const { log, addToQueue } = require('../util')
-const nodemailer = require("nodemailer")
+const { log, addToQueue, joinArtists } = require('../util')
+const nodemailer = require('nodemailer')
+const requestModule = require('request')
 
 const sendEmailNotification = async recipient => {
     const transporter = nodemailer.createTransport({
@@ -20,6 +21,76 @@ const sendEmailNotification = async recipient => {
         subject: "You have unread requests",
         text: "Go to songq.io to attend to your requests",
         html: "Go to songq.io to attend to your requests",
+    })
+}
+
+const distance = (keysNotAllPresent, keysAllPresent, keys) => {
+    let squareTotals = 0
+    Object.keys(keysNotAllPresent).forEach(key => {
+        if (keys.includes(key)) {
+            squareTotals += ((keysAllPresent[key] - keysNotAllPresent[key]) ** 2)
+        }
+    })
+    return squareTotals ** 0.5
+}
+
+const getAudioFeatures = (accessToken, songId, topFeatures, keys) => {
+    return new Promise((resolve, reject) => {
+        const options = {
+            url: `https://api.spotify.com/v1/audio-features/${songId}`,
+            headers: {
+                'Authorization': `Bearer ${accessToken}` 
+            },
+            json: true
+        }
+        requestModule.get(options, (error, response, body) => {
+            if (!error && response.statusCode >= 200 && response.statusCode < 300) {
+                const trackFeatures = body
+                const zeros = {}
+                keys.forEach(key => {
+                    zeros[key] = 0
+                })
+                const zeroDistance = distance(trackFeatures, zeros, keys)
+                const euclidianDistances = []
+                topFeatures.forEach(features => {
+                    const dist = distance(trackFeatures, features, keys)
+                    euclidianDistances.push({
+                        id: features['id'],
+                        distance: dist
+                    })
+                })
+                resolve({ zeroDistance, distances: euclidianDistances })
+            } else {
+                if (error) {
+                    reject({ error })
+                } else {
+                    reject({ body, statusCode: response.statusCode })
+                }
+            }
+        })
+    })
+}
+
+const getTrackDetails = (id, accessToken) => {
+    return new Promise((resolve, reject) => {
+        const options = {
+            url: `https://api.spotify.com/v1/tracks/${id}`,
+            headers: {
+                'Authorization': `Bearer ${accessToken}` 
+            },
+            json: true
+        }
+        requestModule.get(options, (error, response, body) => {
+            if (!error && response.statusCode >= 200 && response.statusCode < 300) {
+                resolve(body)
+            } else {
+                if (error) {
+                    reject({ error })
+                } else {
+                    reject({ body, statusCode: response.statusCode })
+                }
+            }
+        })
     })
 }
 
@@ -52,6 +123,25 @@ const makeRequestHandler = (req, res) => {
             albumArt,
             serviced: false,
             recommended: false
+        }
+        if (user.topTracks) {
+            const keys = ["danceability", "energy", "loudness", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo"]
+            const { zeroDistance, distances } = await getAudioFeatures(req.session.ccTokenInfo.token, songId, user.topTracks, keys)
+            const percentageDifferences = []
+            distances.forEach(({id, distance}) => {
+                percentageDifferences.push({
+                    id,
+                    difference: (distance / zeroDistance) * 100
+                })
+            })
+            percentageDifferences.sort((a, b) => a.difference - b.difference)
+            if (percentageDifferences.length > 0) {
+                const winner = percentageDifferences[0]
+                const details = await getTrackDetails(winner.id, req.session.ccTokenInfo.token)
+                winner.name = details.name
+                winner.artists = joinArtists(details.artists)
+                requestData.similar = winner
+            }
         }
         if (user.autoAccept) {
             const db = RequestModel.db.db
@@ -87,7 +177,6 @@ const makeRequestHandler = (req, res) => {
         const request = new RequestModel(requestData)
         request.save()
             .then(doc => {
-
                 // send message on websocket
                 WSConnectionModel.findOne({ userId }, (err, connection) => {
                     if (err) {
