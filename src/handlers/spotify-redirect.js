@@ -104,10 +104,10 @@ const spotifyRedirectHandler = function(req, res) {
               newUser.autoAccept = false
             }
             if (newUser.emailPreference === undefined) {
-              emailPreference = 'unreadRequests'
+              newUser.emailPreference = 'unreadRequests'
             }
             if (newUser.shouldSendEmail === undefined) {
-              shouludSendEmail = true
+              newUser.shouludSendEmail = true
             }
           }
           try {
