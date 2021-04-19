@@ -124,10 +124,13 @@ const makeRequestHandler = (req, res) => {
             serviced: false,
             recommended: false
         }
+        
+        // recommendations
         if (user.topTracks) {
             const keys = ["danceability", "energy", "loudness", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo"]
             const { zeroDistance, distances } = await getAudioFeatures(req.session.ccTokenInfo.token, songId, user.topTracks, keys)
             const percentageDifferences = []
+
             distances.forEach(({id, distance}) => {
                 percentageDifferences.push({
                     id,
@@ -140,9 +143,10 @@ const makeRequestHandler = (req, res) => {
                 const details = await getTrackDetails(winner.id, req.session.ccTokenInfo.token)
                 winner.name = details.name
                 winner.artists = joinArtists(details.artists)
-                requestData.similar = winner
+                requestData.similar = percentageDifferences
             }
         }
+
         if (user.autoAccept) {
             const db = RequestModel.db.db
             try {

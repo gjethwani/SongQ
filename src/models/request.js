@@ -32,7 +32,7 @@ const RequestSchema = new mongoose.Schema({
         type: Boolean,
     },
     similar: {
-        type: Object
+        type: Array
     }
 }, { 
     timestamps: { 
