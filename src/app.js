@@ -21,6 +21,7 @@ const { getRecommendationHandler } = require('./handlers/get-recommendation')
 const { submitFeedbackHandler } = require('./handlers/submit-feedback')
 const { changeEmailPreferenceHandler } = require('./handlers/change-email-preference')
 const { changeShouldSendEmailHandler } = require('./handlers/change-should-send-email')
+const { getLatestRequests } = require('./handlers/get-latest-requests')
 
 app.get('/now-playing', authenticateAuthorizationFlow, nowPlayingHandler)
 
@@ -57,6 +58,8 @@ app.post('/submit-feedback', authenticateAuthorizationFlow, submitFeedbackHandle
 app.post('/change-email-preference', authenticateAuthorizationFlow, changeEmailPreferenceHandler)
 
 app.post('/change-should-send-email', authenticateAuthorizationFlow, changeShouldSendEmailHandler)
+
+app.get('/get-latest-requests', getLatestRequests)
 
 app.get('/subscribe', subscribeHandler)
 
