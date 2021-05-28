@@ -1,6 +1,8 @@
 const request = require('request')
 const { getCurrentUnixTimeStamp, log } = require('../util')
 const UserModel = require('../models/user')
+const nodemailer = require('nodemailer')
+const { welcomeEmail } = require('../constants/welcome-email')
 
 const getSpotifyDetails = (accessToken) => {
   var options = {
@@ -45,6 +47,23 @@ const checkProperties = (properties, values, user) => {
     }
   }
   return user
+}
+
+const sendWelcomeEmail = recipient => {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_ADDRESS,
+      pass: process.env.EMAIL_PASSWORD,
+    }
+  })
+
+  transporter.sendMail({
+      from: '"SongQ Team" <info@songq.io>',
+      to: recipient,
+      subject: "Welcome to SongQ",
+      html: welcomeEmail,
+  })
 }
 
 const spotifyRedirectHandler = function(req, res) {
@@ -94,6 +113,7 @@ const spotifyRedirectHandler = function(req, res) {
               emailPreference: 'unreadRequests',
               shouldSendEmail: true
             })
+            sendWelcomeEmail(email)
           } else {
             newUser = checkProperties(
               ['userId', 'name', 'email', 'profilePicture'],
